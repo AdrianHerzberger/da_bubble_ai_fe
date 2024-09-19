@@ -9,6 +9,7 @@ import { AuthActionComponent } from './auth-action/auth-action.component';
 import { StartscreenComponent } from './startscreen/startscreen.component';
 import { ImprintComponent } from './imprint/imprint.component';
 import { LegalComponent } from './legal/legal.component';
+import { HeaderBarComponent } from './header-bar/header-bar.component';
 
 const routes: Routes = [
   { path: '', component: StartscreenComponent },

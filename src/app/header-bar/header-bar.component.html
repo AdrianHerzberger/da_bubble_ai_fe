@@ -24,7 +24,7 @@
    
     <div (click)="openLogoutContainer()" class="profile">
         <h2>{{ this.userDataService.userName }}</h2>
-        <img class="user-icon" src="{{ this.userDataService.userPicture }}" alt="">
+        <img class="user-icon" src="{{ this.userProfilePictureUrl }}" alt="">
         <mat-icon>keyboard_arrow_down</mat-icon>
         <div class="status"></div>
     </div>
@@ -57,11 +57,11 @@
                 <mat-icon (click)="closeUserProfile()">close</mat-icon>
             </mat-card-header>
             <div class="user-img-one">
-                <img src="{{ this.userDataService.userPicture }}">
+                <img src="{{ this.userProfilePictureUrl }}">
             </div>
             <mat-card-content>
                 <div class="user-contact-info">
-                    <p>{{ this.userDataService.userName }}</p>
+                    <p>{{ this.userName }}</p>
                     <a (click)="openEditProfileCard()">Edit</a>
                 </div>
                 <div class="user-status">
@@ -79,7 +79,7 @@
                     <mat-icon>mail_outline</mat-icon>
                     <div class="user-email-link">
                         <p>E-Mail-Address</p>
-                        <a>{{ this.userDataService.userEmail }}</a>
+                        <a>{{ this.userEmail }}</a>
                     </div>
                 </div>
             </mat-card-content>

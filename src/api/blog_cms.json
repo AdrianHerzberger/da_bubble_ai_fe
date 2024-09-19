@@ -29,8 +29,42 @@
                   "properties": {
                     "id": { "type": "integer" },
                     "user_name": { "type": "string" },
-                    "birth_date": { "type": "string", "format": "date" },
-                    "email": { "type": "string" }
+                    "user_email": { "type": "string" },
+                    "user_profile_picture_url": { "type": "string" }
+                  }
+                }
+              }
+            }
+          },
+          "404": { "description": "User not found" }
+        }
+      }
+    },
+    "/api/users/{user_email}": {
+      "get": {
+        "summary": "Get user by email",
+        "parameters": [
+          {
+            "name": "user_email",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "User found",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "id": { "type": "integer" },
+                    "user_name": { "type": "string" },
+                    "email": { "type": "string" },
+                    "user_profile_picture_url": { "type": "string" }
                   }
                 }
               }
@@ -69,7 +103,9 @@
                   "type": "object",
                   "properties": {
                     "message": { "type": "string" },
-                    "user_id": { "type": "integer" }
+                    "user_name": { "type": "string" },
+                    "user_email": { "type": "string", "format": "email" },
+                    "user_password": { "type": "string" }
                   }
                 }
               }
@@ -93,9 +129,14 @@
                 "type": "object",
                 "properties": {
                   "user_email": { "type": "string", "format": "email" },
-                  "user_password": { "type": "string" }
+                  "user_password": { "type": "string" },
+                  "user_profile_picture_url": { "type": "string" }
                 },
-                "required": ["user_email", "user_password"]
+                "required": [
+                  "user_email",
+                  "user_password",
+                  "user_profile_picture_url"
+                ]
               }
             }
           }
@@ -109,7 +150,9 @@
                   "type": "object",
                   "properties": {
                     "message": { "type": "string" },
-                    "user_id": { "type": "integer" }
+                    "user_email": { "type": "string", "format": "email" },
+                    "user_password": { "type": "string" },
+                    "user_profile_picture_url": { "type": "string" }
                   }
                 }
               }
@@ -117,6 +160,55 @@
           },
           "500": {
             "description": "Error login user"
+          }
+        }
+      }
+    },
+    "/api/create_channel": {
+      "post": {
+        "summary": "Create a channel",
+        "requestBody": {
+          "description": "Create channel data",
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "channel_name": { "type": "string" },
+                  "channel_description": { "type": "string" },
+                  "channel_color": { "type": "string" },
+                  "user_id": { "type": "number" }
+                },
+                "required": [
+                  "channel_name",
+                  "channel_description",
+                  "channel_color",
+                  "user_id"
+                ]
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "Channel created successfully",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "channel_name": { "type": "string" },
+                    "channel_description": { "type": "string" },
+                    "channel_color": { "type": "string" },
+                    "user_id": { "type": "number" }
+                  }
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Error creating channel"
           }
         }
       }

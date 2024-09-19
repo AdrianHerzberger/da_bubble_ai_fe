@@ -3,6 +3,7 @@ import { FormControl, FormGroup, Validators } from '@angular/forms';
 import { AuthenticationService } from '../service-moduls/authentication.service';
 import { Router } from '@angular/router';
 import { APIClient } from 'output';
+import { UserDataService } from '../service-moduls/user.service';
 
 @Component({
   selector: 'app-sign-in',
@@ -24,12 +25,12 @@ export class SignInComponent {
   constructor(
     private router: Router,
     public authenticationService: AuthenticationService,
+    private userDataService: UserDataService,
     private apiClient: APIClient
   ) { }
 
   validateUserCredentials() {
     this.submitted = true;
-    this.disableForm();
     const userEmail: string = this.signInForm.value.email?.toLowerCase() || '';
     const userPassword = this.signInForm.value.password ?? '';
     this.signInUser(userEmail, userPassword);
@@ -37,19 +38,23 @@ export class SignInComponent {
 
   async signInUser(userEmail: string, userPassword: string) {
     if (userEmail && userPassword) {
+      const userProfilePictureUrl = this.userDataService.createProfileAvatar();
       this.apiClient.postApiSignInUser({
         user_email: userEmail,
-        user_password: userPassword
+        user_password: userPassword,
+        user_profile_picture_url: userProfilePictureUrl
       }).subscribe({
         next: (response) => {
           console.log('User logged in successfully:', response);
+          this.isFormValid();
           this.authenticationService.getUserData(userEmail);
         },
         error: (error: any) => {
-          console.error('Error loging in user:', error);
-        },
-        complete: () => {
-          console.log('User login complete.');
+          console.error('Error logging in user:', error);
+          if (error.error === 'emailNotVerified') {
+            this.showError('userNotFound');
+          }
+          this.isFormInvalid();
         }
       });
     } else {
@@ -58,31 +63,28 @@ export class SignInComponent {
     }
   }
 
-  checkError() {
-    if (this.authenticationService.errorMessage === 'auth/wrong-password' || 
-      this.authenticationService.errorMessage === 'auth/user-not-found') {
-      this.showError('userNotFound')
+  showError(errorType: 'userNotFound' | 'emailNotVerify') {
+    this[errorType] = true;
+    if (errorType === 'userNotFound') {
+      this.emailNotVerify = false;
+    } else if (errorType === 'emailNotVerify') {
+      this.userNotFound = false;
     }
   }
 
-  showError(errorType: 'userNotFound' | 'emailNotVerify') {
-    this[errorType] = true;
-    setTimeout(() => {
-      this[errorType] = false;
-    }, 5000);
-  }
-
-  disableForm() {
+  isFormValid() {
     this.signInForm.disable();
     this.isSignIn = true;
+    this.submitted = true;
   }
 
-  enableForm() {
+  isFormInvalid() {
     setTimeout(() => {
       this.signInForm.enable();
       this.isSignIn = false;
       this.submitted = false;
-    }, 3500);
+      this.userNotFound = true
+    }, 1500);
   }
 
 }

@@ -23,26 +23,25 @@ export class AuthenticationService {
 
 
   async loginWithGoogle() {
-    const auth = getAuth();
-    const provider = new GoogleAuthProvider();
-    this.user = null;
-    this.errorMessage = '';
+    return new Promise(async (resolve, reject) => {
+      const auth = getAuth();
+      const provider = new GoogleAuthProvider();
+      this.user = null;
 
-    await signInWithPopup(auth, provider)
-      .then(async (result) => {
-
-        this.user = result.user;
-        const authUID = result.user.uid;
-        const emailLowerCase: string = result.user.email?.toLowerCase() || '';
-        const name: string = result.user.displayName || '';
-        await this.sendUserToFirebase(name, emailLowerCase, authUID, './assets/profile-pictures/avatar1.png');
-      })
-      .catch((error) => {
-        const errorCode = error.code;
-        const errorMessage = error.message;
-        const email = error.customData.email;
-        const credential = GoogleAuthProvider.credentialFromError(error);
-      });
+      await signInWithPopup(auth, provider)
+        .then(async (result) => {
+          this.user = result.user;
+          const authUID = result.user.uid;
+          const emailLowerCase: string = result.user.email?.toLowerCase() || '';
+          const name: string = result.user.displayName || '';
+          this.router.navigateByUrl('/board/' + authUID);
+          await this.sendUserToFirebase(name, emailLowerCase, authUID, './assets/profile-pictures/avatar1.png');
+        })
+        .catch((error: any) => {
+          console.log("Error login in with google credentials:", error);
+          GoogleAuthProvider.credentialFromError(error);
+        });
+    });
   }
 
   async sendUserToAuthenticator(emailLowerCase: string, password: string): Promise<any> {
@@ -184,15 +183,13 @@ export class AuthenticationService {
         const userId = response.id;
         if (userId) {
           this.router.navigateByUrl('/board/' + userId);
+          this.userDataService.getCurrentUserData(userId);
         } else {
           console.error('User ID not found in response.');
         }
       },
       error: (error) => {
         console.error('Error retrieving user data:', error);
-      },
-      complete: () => {
-        console.log('User data retrieval complete.');
       }
     })
   }

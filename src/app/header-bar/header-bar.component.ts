@@ -1,4 +1,4 @@
-import { Component } from '@angular/core';
+import { Component, OnDestroy, OnInit } from '@angular/core';
 import { FormControl, FormGroup, Validators } from '@angular/forms';
 import { AuthenticationService } from '../service-moduls/authentication.service';
 import { ValidationService } from '../service-moduls/validation.service';
@@ -9,13 +9,14 @@ import { ActivatedRoute } from '@angular/router';
 import { ChannelDataInterface } from '../service-moduls/channel.service';
 import { Observable, map } from 'rxjs';
 import { ChannelDataResolverService } from '../service-moduls/channel-data-resolver.service';
+import { GetUserByIdResponse } from 'output/models/types';
 
 @Component({
   selector: 'app-header-bar',
   templateUrl: './header-bar.component.html',
   styleUrls: ['./header-bar.component.scss']
 })
-export class HeaderBarComponent {
+export class HeaderBarComponent implements OnInit, OnDestroy {
   showIcon = false;
   statusColor = 'Active';
   isLogoutContainerOpen: boolean = false;
@@ -53,7 +54,6 @@ export class HeaderBarComponent {
     ]),
   });
 
-
   constructor(
     public userDataService: UserDataService,
     public validation: ValidationService,
@@ -64,32 +64,28 @@ export class HeaderBarComponent {
     private route: ActivatedRoute,
   ) { }
 
-/**
- * Lifecycle hook that is called after Angular has initialized the component.
- * Fetches the current user ID, gets the user data, and sets the status color.
- */
-  async ngOnInit() {
-    this.getCurrentUserId();
-    await this.userDataService.getCurrentUserData(this.userDataService.currentUser);
-    this.colorStatus();
-    await this.userDataService.getCurrentUserData(this.userDataService.currentUser);
-    this.getDataFromChannel();
+  userName: string = '';
+  userEmail: string = '';
+  userProfilePictureUrl: string = '';
+
+  ngOnInit(): void {
+    this.currentUserData();
   }
 
-/**
- * Gets the current user ID from the route parameters and updates the `currentUser` in the `userDataService`.
- */
-  getCurrentUserId() {
-    // this.currentUser = localStorage.getItem('currentUser') ?? ''; // TEST
-    this.route.params.subscribe((params) => {
-      this.userDataService.currentUser = params['id'];
+  ngOnDestroy(): void {
+    this.currentUserData();
+  }
+
+  currentUserData() {
+    this.userDataService.userData$.subscribe((userData: GetUserByIdResponse | null) => {
+      if (userData) {
+        this.userName = userData.user_name;
+        this.userEmail = userData.user_email;
+        this.userProfilePictureUrl = userData.user_profile_picture_url;
+      }
     });
   }
-
-  /**
- * Edits the user profile by updating the name and email.
- * @async
- */
+  
   async editUserProfile() {
     let name = this.editNameForm.value.name ?? '';
     let email = this.editMailForm.value.email?.toLowerCase() || '';
@@ -123,7 +119,7 @@ export class HeaderBarComponent {
     this.disableForm();
 
     await this.changeFirebase(name, 'name');
-    this.userDataService.getCurrentUserData(this.userDataService.currentUser);
+    this.userDataService.getCurrentUserDataUID(this.userDataService.currentUser);
 
     this.showsNotificationAnimation();
     this.resetForm();
@@ -165,7 +161,7 @@ export class HeaderBarComponent {
     this.disableForm();
     await this.authentication.changeMail(email, password);
     await this.changeFirebase(email, 'email');
-    this.userDataService.getCurrentUserData(this.userDataService.currentUser);
+    this.userDataService.getCurrentUserDataUID(this.userDataService.currentUser);
 
     this.showsNotificationAnimation();
     this.resetForm();
@@ -275,7 +271,7 @@ export class HeaderBarComponent {
     const selectedPicture = this.selectedPictureIndex;
     try {
       await updateDoc(userDocRef, { picture: `/assets/profile-pictures/avatar${selectedPicture + 1}.png` });
-      this.userDataService.getCurrentUserData(this.userDataService.currentUser);
+      this.userDataService.getCurrentUserDataUID(this.userDataService.currentUser);
 
       this.selectedPictureIndex = null;
       this.closeProfilePictureContainer();

@@ -1,6 +1,8 @@
 import { Injectable } from '@angular/core';
 import { DocumentData, Firestore, QuerySnapshot, collection, doc, getDoc, getDocs, query } from '@angular/fire/firestore';
-import { Observable, from, map } from 'rxjs';
+import { APIClient } from 'output';
+import { GetUserByIdResponse } from 'output/models/types';
+import { BehaviorSubject, Observable, catchError, from, map, of } from 'rxjs';
 
 export interface UserDataInterface {
   id: string;
@@ -19,9 +21,43 @@ export class UserDataService {
 
   userData: UserDataInterface[] = [];
 
+  private userDataSubject = new BehaviorSubject<GetUserByIdResponse | null>(null);
+  public userData$ = this.userDataSubject.asObservable();
+
   constructor(
-    public firestore: Firestore
-  ) { }
+    public firestore: Firestore,
+    private apiClient: APIClient,
+  ) {
+  }
+
+
+  createProfileAvatar() {
+    const randomAvatarNumber = Math.floor(Math.random() * 6) + 1;
+    const profilePictureUrl = `./assets/profile-pictures/avatar${randomAvatarNumber}.png`;
+    return profilePictureUrl;
+  }
+
+  getCurrentUserData(userId: number): void {
+    console.log(userId)
+    this.apiClient.getApiUsersUserId({ userId }).subscribe({
+      next: (response) => {
+        const userData = response;
+        if (userData) {
+          this.userDataSubject.next(userData);
+        } else {
+          console.error('User ID not found in response.');
+        }
+      },
+      error: (error) => {
+        console.error('Error retrieving user data:', error);
+      }
+    });
+  }
+
+  // clearUserData() {
+  //   this.userDataSubject.next(null);  
+  // }
+
 
   getUserData(): Observable<UserDataInterface[]> {
     const userCollection = collection(this.firestore, 'users');
@@ -55,12 +91,13 @@ export class UserDataService {
   userEmail: string = '';
   userStatus: string = '';
   userPicture: string = '';
+  userProfilePicture: string = '';
 
   /**
    * Asynchronously retrieves the current user's data based on the provided userID.
    * @param {string} userID - The ID of the user whose data is to be retrieved in the 'users' collection.
    */
-  async getCurrentUserData(userID: string) {
+  async getCurrentUserDataUID(userID: string) {
     try {
       const userDocRef = doc(this.firestore, 'users', userID);
       const docSnapshot = await getDoc(userDocRef);

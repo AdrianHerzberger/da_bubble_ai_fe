@@ -313,7 +313,7 @@ export class ChatComponent implements OnInit, OnChanges, AfterViewChecked {
   }
 
   async deleteUserFromChannel() {
-    await this.userDataService.getCurrentUserData(this.userDataService.currentUser);
+    await this.userDataService.getCurrentUserDataUID(this.userDataService.currentUser);
     this.deleteUserFormChannel = this.userDataService.currentUser;
   }
 
