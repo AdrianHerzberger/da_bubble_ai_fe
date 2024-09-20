@@ -59,25 +59,13 @@
                 </div>
                 <h3>{{ users.name }}</h3>
             </div>
-            <!-- <div class="direct-box" *ngFor="let directChat of directChatData; let c = index">
-                    <div class="user-icon">
-                        <img class="user-icon" src="{{ directChat.picture }}" alt="User">
-                        <svg *ngIf="directChat.status === 'Active'" class="status" xmlns="http://www.w3.org/2000/svg" width="8" height="8" viewBox="0 0 8 8">
-                            <circle cx="4" cy="4" r="4" fill="#92C83E" />
-                        </svg>
-                        <svg *ngIf="directChat.status === 'Inactive'" class="status" xmlns="http://www.w3.org/2000/svg" width="8" height="8" viewBox="0 0 8 8">
-                            <circle cx="4" cy="4" r="4" fill="#808080" />
-                        </svg>
-                    </div>
-                    <h3 (click)="selectDirectChat(directChat.id)">{{ directChat.name }}</h3>
-                </div> -->
         </div>
     </div>
 </mat-card>
 
 <mat-card class="overlay" *ngIf="channelCard">
-    <div class="channel-edit-card">
-        <form [formGroup]="channelForm">
+    <div  class="channel-edit-card">
+        <form (ngSubmit)="submitChannel()" [formGroup]="channelForm">
             <div class="channel-introduction">
                 <div class="channel-text">
                     <h2>Add Channel</h2>
@@ -112,7 +100,7 @@
                 </div>
             </div>
             <div class="btn-area">
-                <button class="btn-channel" (click)="submitChannel()">Create</button>
+                <button class="btn-channel" type="submit">Create</button>
             </div>
         </form>
     </div>
@@ -140,7 +128,7 @@
                 </mat-radio-button>
             </mat-radio-group>
         </div>
-        <form [formGroup]="userForm" *ngIf="openUserForm">
+        <form (ngSubmit)="submitUser()" [formGroup]="userForm" *ngIf="openUserForm">
             <div class="users-inputs">
                 <input class="user-name" type="text" placeholder="Name eingeben" formControlName="userName">
                 <div *ngIf="userForm.controls['userName'].invalid && userForm.controls['userName'].touched">
@@ -151,7 +139,7 @@
             </div>
         </form>
         <div class="btn-area">
-            <button class="btn-channel" (click)="submitUserToChannel()">Create</button>
+            <button class="btn-channel" type="submit">Create</button>
         </div>
     </div>
 </mat-card>

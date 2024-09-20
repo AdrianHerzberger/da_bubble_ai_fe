@@ -44,6 +44,41 @@ export class AuthenticationService {
     });
   }
 
+  registerUser(userName: string | undefined, userEmail: string, userPassword: string) {
+    this.apiClient.postApiRegisterUser({
+      user_name: userName,
+      user_email: userEmail,
+      user_password: userPassword
+    }).subscribe({
+      next: (response) => {
+        console.log('User registered successfully:', response);
+      },
+      error: (error: any) => {
+        console.error('Error registering user:', error);
+      }
+    })
+  }
+
+  signInUser(userEmail: string, userPassword: string) {
+    if (userEmail && userPassword) {
+      const userProfilePictureUrl = this.userDataService.createProfileAvatar();
+      this.apiClient.postApiSignInUser({
+        user_email: userEmail,
+        user_password: userPassword,
+        user_profile_picture_url: userProfilePictureUrl
+      }).subscribe({
+        next: (response) => {
+          console.log('User logged in successfully:', response);
+          this.userDataService.getCurrentUserByEmail(userEmail);
+          this.userDataService.storedAccessToken(response.access_token)
+        },
+        error: (error: any) => {
+          console.error('Error logging in user:', error);
+        }
+      });
+    } 
+  }
+
   async sendUserToAuthenticator(emailLowerCase: string, password: string): Promise<any> {
     return new Promise(async (resolve, reject) => {
       const auth = getAuth();
@@ -177,22 +212,7 @@ export class AuthenticationService {
     }
   }
 
-  getUserData(userEmail: string): void {
-    this.apiClient.getApiUserEmail({ userEmail }).subscribe({
-      next: (response) => {
-        const userId = response.id;
-        if (userId) {
-          this.router.navigateByUrl('/board/' + userId);
-          this.userDataService.getCurrentUserData(userId);
-        } else {
-          console.error('User ID not found in response.');
-        }
-      },
-      error: (error) => {
-        console.error('Error retrieving user data:', error);
-      }
-    })
-  }
+  
 
   async sendUserToFirebase(name: string, emailLowerCase: string, authUID: any, avatar: string) {
     let data = {

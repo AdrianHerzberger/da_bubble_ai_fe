@@ -4,6 +4,7 @@ import { ValidationService } from '../service-moduls/validation.service';
 import { AuthenticationService } from '../service-moduls/authentication.service';
 import { Router } from '@angular/router';
 import { APIClient } from 'output';
+import { UserDataService, UserDataInterface, UserDataTypes } from '../service-moduls/user.service';
 
 @Component({
   selector: 'app-sign-up',
@@ -43,46 +44,27 @@ export class SignUpComponent {
 
   constructor(
     private router: Router, 
+    private userDataService: UserDataService,
     public ValidationService: ValidationService, 
     public authenticationService: AuthenticationService,
     public apiClient: APIClient
   ) { }
 
-  async signUp() {
+  signUp() {
     this.submitted = true;
-    if (this.signUpForm.invalid) {
-      return;
+    if (this.signUpForm.valid) {
+      const user:  UserDataTypes = {
+        userName: this.signUpForm.value.name?.toLowerCase() || '',
+        userEmail: this.signUpForm.value.email?.toLowerCase() || '',
+        userPassword: this.signUpForm.value.password ?? ''
+      }
+      this.authenticationService.registerUser(user.userName, user.userEmail, user.userPassword)
+      this.showsNotificationAnimation();
+      this.resetForm();
+      this.router.navigateByUrl("/sign-in");
     }
     this.disableForm();
-
-    const userName: string = this.signUpForm.value.name?.toLowerCase() || '';
-    const userPassword: string = this.signUpForm.value.password ?? '';
-    const userEmail: string = this.signUpForm.value.email?.toLowerCase() || '';
-    
-    this.registerUser(userName, userEmail, userPassword);
   }
-
-  registerUser(userName: string, userEmail: string, userPassword: string) {
-    this.apiClient.postApiRegisterUser({
-      user_name: userName,
-      user_email: userEmail,
-      user_password: userPassword
-    }).subscribe({
-      next: (response) => {
-        console.log('User registered successfully:', response);
-      },
-      error: (error: any) => {
-        console.error('Error registering user:', error);
-      },
-      complete: () => {
-        console.log('User registration complete.');
-      }
-    })
-    this.showsNotificationAnimation();
-    this.resetForm();
-    this.router.navigateByUrl("/sign-in");
-  }
-  
 
   showsNotificationAnimation() {
     this.showSlideInNotification = true;

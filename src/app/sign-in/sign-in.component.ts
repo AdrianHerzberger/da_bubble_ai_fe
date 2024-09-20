@@ -3,7 +3,7 @@ import { FormControl, FormGroup, Validators } from '@angular/forms';
 import { AuthenticationService } from '../service-moduls/authentication.service';
 import { Router } from '@angular/router';
 import { APIClient } from 'output';
-import { UserDataService } from '../service-moduls/user.service';
+import { UserDataService, UserDataTypes } from '../service-moduls/user.service';
 
 @Component({
   selector: 'app-sign-in',
@@ -25,39 +25,22 @@ export class SignInComponent {
   constructor(
     private router: Router,
     public authenticationService: AuthenticationService,
-    private userDataService: UserDataService,
-    private apiClient: APIClient
   ) { }
 
-  validateUserCredentials() {
+  signIn() {
     this.submitted = true;
-    const userEmail: string = this.signInForm.value.email?.toLowerCase() || '';
-    const userPassword = this.signInForm.value.password ?? '';
-    this.signInUser(userEmail, userPassword);
-  }
-
-  async signInUser(userEmail: string, userPassword: string) {
-    if (userEmail && userPassword) {
-      const userProfilePictureUrl = this.userDataService.createProfileAvatar();
-      this.apiClient.postApiSignInUser({
-        user_email: userEmail,
-        user_password: userPassword,
-        user_profile_picture_url: userProfilePictureUrl
-      }).subscribe({
-        next: (response) => {
-          console.log('User logged in successfully:', response);
-          this.isFormValid();
-          this.authenticationService.getUserData(userEmail);
-        },
-        error: (error: any) => {
-          console.error('Error logging in user:', error);
-          if (error.error === 'emailNotVerified') {
-            this.showError('userNotFound');
-          }
-          this.isFormInvalid();
-        }
-      });
-    } else {
+    if (this.signInForm.valid) {
+      const user: UserDataTypes = {
+        userEmail: this.signInForm.value.email?.toLowerCase() || '',
+        userPassword: this.signInForm.value.password ?? '',
+      }
+      this.authenticationService.signInUser(user.userEmail, user.userPassword)
+      this.isFormValid();
+    } else if (this.signInForm.invalid) {
+      this.isFormInvalid();
+      this.showError('userNotFound');
+    }
+    else {
       this.router.navigateByUrl('/sign-in');
       this.showError('emailNotVerify');
     }

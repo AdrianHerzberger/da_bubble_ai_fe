@@ -112,7 +112,7 @@ export class DirectMessageToUserComponent implements OnInit, OnChanges {
   }
 
   async getUserData() {
-    this.userDataService.getUserData().subscribe(
+    this.userDataService.getUserDataQueryOld().subscribe(
       (userData: UserDataInterface[]) => {
         this.userData = userData;
         this.userList = userData.map((user) => user.name);
@@ -423,7 +423,7 @@ export class DirectMessageToUserComponent implements OnInit, OnChanges {
     this.directMessageToUserService.messageData$.subscribe(
       (messages: any[]) => {
         this.userDataService
-          .getUserData()
+          .getUserDataQueryOld()
           .pipe(map((userData) => userData.map((user) => user.id)))
           .subscribe((userIds: string[]) => {
             const userIdToNameMap: { [id: string]: string } = {};

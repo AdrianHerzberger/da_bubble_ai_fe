@@ -12,7 +12,9 @@ import {
   RegisterUserBody,
   RegisterUserResponse,
   SignInUserBody,
-  SignInUserResponse
+  SignInUserResponse,
+  CreateChannelBody,
+  CreateChannelResponse,
 } from './models/types';
 
 
@@ -97,7 +99,21 @@ export class APIClient implements APIClientInterface {
 
     return this.sendRequest<SignInUserResponse>('POST', path, options, body);
   }
-
+  
+  /**
+   * Response generated for [ 201 ] HTTP response code.
+   */
+  postApiCreateChannel(body: CreateChannelBody, options?: { headers?: HttpHeaders }): Observable<CreateChannelResponse> {
+    const path = `/api/create_channel`;
+    const requestOptions: APIHttpOptions = {
+      ...this.options, 
+      headers: options?.headers || this.options.headers
+    };
+  
+    return this.sendRequest<CreateChannelResponse>('POST', path, requestOptions, body);
+  }
+  
+  
   private sendRequest<T>(method: string, path: string, options: HttpOptions, body?: any): Observable<T> {
     switch (method) {
       case 'DELETE':

@@ -1,5 +1,6 @@
 import { Injectable } from '@angular/core';
 import { DocumentData, Firestore, QuerySnapshot, collection, doc, getDoc, getDocs, query } from '@angular/fire/firestore';
+import { Router } from '@angular/router';
 import { APIClient } from 'output';
 import { GetUserByIdResponse } from 'output/models/types';
 import { BehaviorSubject, Observable, catchError, from, map, of } from 'rxjs';
@@ -13,6 +14,13 @@ export interface UserDataInterface {
   status?: any;
 }
 
+export interface UserDataTypes {
+  userId?: number;
+  userName?: string;
+  userPassword: string;
+  userEmail: string;
+}
+
 @Injectable({
   providedIn: 'root'
 })
@@ -21,15 +29,17 @@ export class UserDataService {
 
   userData: UserDataInterface[] = [];
 
+  private accessToken: string | null = null;
+
   private userDataSubject = new BehaviorSubject<GetUserByIdResponse | null>(null);
   public userData$ = this.userDataSubject.asObservable();
 
   constructor(
     public firestore: Firestore,
+    private router: Router, 
     private apiClient: APIClient,
   ) {
   }
-
 
   createProfileAvatar() {
     const randomAvatarNumber = Math.floor(Math.random() * 6) + 1;
@@ -37,8 +47,7 @@ export class UserDataService {
     return profilePictureUrl;
   }
 
-  getCurrentUserData(userId: number): void {
-    console.log(userId)
+  getCurrentUserById(userId: number): void {
     this.apiClient.getApiUsersUserId({ userId }).subscribe({
       next: (response) => {
         const userData = response;
@@ -54,12 +63,37 @@ export class UserDataService {
     });
   }
 
-  // clearUserData() {
-  //   this.userDataSubject.next(null);  
-  // }
+  getCurrentUserId(): number | null {
+    const currentUser = this.userDataSubject.value;
+    return currentUser ? currentUser.id : null;
+  }
 
+  storedAccessToken(token : string) : void {
+    this.accessToken = token
+  }
 
-  getUserData(): Observable<UserDataInterface[]> {
+  getAccessToken(): string | null {
+    return this.accessToken;
+  }
+
+  getCurrentUserByEmail(userEmail: string): void {
+    this.apiClient.getApiUserEmail({ userEmail }).subscribe({
+      next: (response) => {
+        const userId = response.id;
+        if (userId) {
+          this.router.navigateByUrl('/board/' + userId);
+          this.getCurrentUserById(userId);
+        } else {
+          console.error('User ID not found in response.');
+        }
+      },
+      error: (error) => {
+        console.error('Error retrieving user data:', error);
+      }
+    })
+  }
+
+  getUserDataQueryOld(): Observable<UserDataInterface[]> {
     const userCollection = collection(this.firestore, 'users');
     const q = query(userCollection);
 
@@ -84,6 +118,7 @@ export class UserDataService {
       })
     );
   }
+  
 
   /*------ Current-User / Users ------*/
   currentUser: string = '';

@@ -1,16 +1,15 @@
 import { Component, OnInit } from '@angular/core';
 import { UserDataService, UserDataInterface } from '../service-moduls/user.service';
-import { ChannelDataService, ChannelDataInterface } from '../service-moduls/channel.service';
+import { ChannelDataService, ChannelDataInterface, ChannelDataTypes } from '../service-moduls/channel.service';
 import { ChannelDataResolverService } from '../service-moduls/channel-data-resolver.service';
 import { UserDataResolveService } from '../service-moduls/user-data-resolve.service';
 import { ChatBehaviorService } from '../service-moduls/chat-behavior.service';
 import { trigger, state, style, animate, transition } from '@angular/animations';
-import { FormBuilder, FormGroup, Validators } from '@angular/forms';
+import { FormBuilder, FormControl, FormGroup, Validators } from '@angular/forms';
 import { Firestore, addDoc, arrayUnion, collection, doc, getDoc, onSnapshot, updateDoc } from '@angular/fire/firestore';
-import { firstValueFrom } from 'rxjs';
 import { DirectMessageToUserService } from '../service-moduls/direct-message-to-user.service';
 import { DirectMessageService, DirectMessageInterface } from '../service-moduls/direct-message.service';
-import { BreakpointObserver, Breakpoints } from '@angular/cdk/layout';
+import { BreakpointObserver } from '@angular/cdk/layout';
 
 
 @Component({
@@ -31,9 +30,6 @@ import { BreakpointObserver, Breakpoints } from '@angular/cdk/layout';
 })
 
 export class ChannelsComponent implements OnInit {
-  channelForm!: FormGroup;
-  userForm!: FormGroup;
-
   showFiller: boolean = true;
   ChannelChatisOpen: boolean = true;
   openChannels: boolean = true;
@@ -64,20 +60,11 @@ export class ChannelsComponent implements OnInit {
     private directMessageService: DirectMessageService,
     private userDataResolver: UserDataResolveService,
     public chatBehavior: ChatBehaviorService,
-    private fbChannel: FormBuilder,
-    private fbUser: FormBuilder,
     public directMessageToUserService: DirectMessageToUserService,
     private breakpointObserver: BreakpointObserver,
   ) { }
 
   ngOnInit(): void {
-    this.channelForm = this.fbChannel.group({
-      channelName: ['', [Validators.required]],
-      channelDescription: ['', [Validators.required]],
-    });
-    this.userForm = this.fbUser.group({
-      userName: ['', [Validators.required]],
-    });
     this.breakpointObserver.observe('(max-width: 420px)').subscribe(result => {
       if (result.matches) {
         this.chatBehavior.headerMoblieView = false;
@@ -90,8 +77,45 @@ export class ChannelsComponent implements OnInit {
     this.getDirectChatData();
   }
 
+  channelForm = new FormGroup({
+    channelName: new FormControl('', [
+      Validators.required,
+      Validators.minLength(10),
+      Validators.maxLength(25),
+    ]),
+    channelDescription: new FormControl('', [
+      Validators.required,
+    ])
+  });
+
+  userForm = new FormGroup({
+    userName: new FormControl('', [
+      Validators.required,
+    ])
+  });
+
+  submitChannel() {
+    console.log('createChannel called'); 
+    if (this.channelForm) {
+      debugger;
+      const userId = this.userDataService.getCurrentUserId();
+      console.log(userId)
+      const channel: ChannelDataTypes = {
+        channelName: this.channelForm.value.channelName || '',
+        channelDescription: this.channelForm.value.channelDescription || '',
+        userId: userId,
+        color: this.newColor(),
+      };
+      console.log("Channel created with the data :", channel)
+      this.channelDataService.createChannelData(channel.channelName, channel.channelDescription, channel.color, channel.userId);
+      this.channelForm.reset();
+      this.channelCard = false;
+      this.userCard = true;
+    }
+  }
+
   async getUserData() {
-    this.userDataService.getUserData().subscribe(
+    this.userDataService.getUserDataQueryOld().subscribe(
       userData => {
         this.userData = userData;
         /* console.log('Subscribed data users:', userData); */
@@ -232,29 +256,6 @@ export class ChannelsComponent implements OnInit {
     return randomColor;
   }
 
-  async submitChannel() {
-    if (this.channelForm.valid) {
-      const channel: ChannelDataInterface = {
-        channelName: this.channelForm.value.channelName,
-        channelDescription: this.channelForm.value.channelDescription,
-        createdByUser: this.userDataService.currentUser && this.userDataService.userName,
-        color: this.newColor(),
-      };
-      this.channelDataService.addChannelData(channel).subscribe(
-        (docId) => {
-          this.channelId = docId;
-          this.channelData.push(channel);
-          console.log('Channel created with ID:', docId);
-        },
-        (error) => {
-          console.error('Error creating channel:', error);
-        }
-      );
-      this.channelForm.reset();
-      this.channelCard = false;
-      this.userCard = true;
-    }
-  }
 
   close() {
     this.channelCard = false;
@@ -270,76 +271,58 @@ export class ChannelsComponent implements OnInit {
     console.log("type", this.selectedUserType);
   }
 
-  async submitUserToChannel() {
-    let userCreatedChannel  = this.userDataService.currentUser;
-    if (this.userForm.valid && this.channelId) {
-      try {
-        const userName = this.userForm.value.userName;
-        const userData = await firstValueFrom(this.userDataService.getUserData());
-        const matchingUser = userData.find(user => user.name === userName);
+  submitUser() {
+  //   let currentUserId = this.userDataService.getCurrentUserId();
+  //   if (this.userForm.valid && this.channelId) {
+  //     try {
+  //       const userName = this.userForm.value.userName;
+  //       const userData = this.userDataService.getUserData();
+  //       const selectedUserName = userData.find(user => user.name === userName);
 
-        if (!(matchingUser && this.selectedUserType === 'addByUser')) {
-          console.log('User not found.');
-          return
-        }
-        const users: string[] = [userCreatedChannel, matchingUser.id];
-        console.log("Im the user array in the channel", users);
-        await this.addUserToChannel(users, userName);
-      } catch (error) {
-        console.error('Error adding user:', error);
-      } finally {
-        this.userForm.reset();
-        this.userCard = false;
-      }
-    }
+  //       if (!(matchingUser && this.selectedUserType === 'addByUser')) {
+  //         console.log('User not found.');
+  //         return
+  //       }
+  //   }
 
-    if (this.selectedChannel) {
-      try {
-        const matchingChannelFromList = this.selectedChannel;
-        const users = matchingChannelFromList.users;
-        if (!(matchingChannelFromList && this.selectedUserType === 'addFromGroup')) {
-          console.log('User not found.');
-          return;
-        }
-        const usersArray: string[] = [userCreatedChannel, ...users];
-        console.log("Users array", usersArray);
-  
-        const userGroup: string[] = [...usersArray];
-        console.log("User group array", userGroup);
-        
-        await this.addGroupToChannel(userGroup);
-      } catch (error) {
-        console.error('Error adding user:', error);
-      }
-    }
-  }
+  //   if (this.selectedChannel) {
+  //     try {
+  //       const matchingChannelFromList = this.selectedChannel;
+  //       const users = matchingChannelFromList.users;
+  //       if (!(matchingChannelFromList && this.selectedUserType === 'addFromGroup')) {
+  //         console.log('User not found.');
+  //         return;
+  //       }
+  //   }
+  // }
 
-  async addUserToChannel(users: string[], userName: string) {
-    try {
-      const channelDoc = doc(this.firestore, 'channels', this.channelId);
-      const filteredUsers = users.filter(user => user !== userName);
-      console.log(filteredUsers);
-      await updateDoc(channelDoc, {
-        users: arrayUnion(...filteredUsers)
-      });
-      console.log('User added successfully.');
-    } catch (error) {
-      console.error('Error adding user:', error);
-    }
-  }
+  // async addUserToChannel(users: string[], userName: string) {
+  //   try {
+  //     const channelDoc = doc(this.firestore, 'channels', this.channelId);
+  //     const filteredUsers = users.filter(user => user !== userName);
+  //     console.log(filteredUsers);
+  //     await updateDoc(channelDoc, {
+  //       users: arrayUnion(...filteredUsers)
+  //     });
+  //     console.log('User added successfully.');
+  //   } catch (error) {
+  //     console.error('Error adding user:', error);
+  //   }
+  // }
 
-  async addGroupToChannel(userGroup: string[]) {
-    try {
-      const channelDoc = doc(this.firestore, 'channels', this.channelId);
-      const usersToAdd = userGroup;
-      await updateDoc(channelDoc, {
-        users: arrayUnion(...usersToAdd)
-      });
-      console.log('Users added successfully.');
-    } catch (error) {
-      console.error('Error adding users:', error);
-    }
-    this.userCard = false;
+  // async addGroupToChannel(userGroup: string[]) {
+  //   try {
+  //     const channelDoc = doc(this.firestore, 'channels', this.channelId);
+  //     const usersToAdd = userGroup;
+  //     await updateDoc(channelDoc, {
+  //       users: arrayUnion(...usersToAdd)
+  //     });
+  //     console.log('Users added successfully.');
+  //   } catch (error) {
+  //     console.error('Error adding users:', error);
+  //   }
+  //   this.userCard = false;
+  // }
   }
 }
 

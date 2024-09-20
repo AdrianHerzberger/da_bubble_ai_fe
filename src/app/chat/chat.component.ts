@@ -147,7 +147,7 @@ export class ChatComponent implements OnInit, OnChanges, AfterViewChecked {
   }
 
   async getUserData() {
-    this.userDataService.getUserData().subscribe(
+    this.userDataService.getUserDataQueryOld().subscribe(
       (userData: UserDataInterface[]) => {
         this.userData = userData;
         this.userList = userData.map(user => user.name);
@@ -644,7 +644,7 @@ export class ChatComponent implements OnInit, OnChanges, AfterViewChecked {
     this.messageDataService.messageData$.subscribe(
       (messages) => {
 
-        this.userDataService.getUserData().pipe(
+        this.userDataService.getUserDataQueryOld().pipe(
           map((userData) => userData.map(user => user.id))
         ).subscribe(
           (userIds: string[]) => {

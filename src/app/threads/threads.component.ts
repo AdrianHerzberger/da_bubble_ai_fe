@@ -431,7 +431,7 @@ export class ThreadsComponent implements OnInit, OnChanges {
     this.messageDataService.messageData$.subscribe(
       (messages) => {
 
-        this.userDataService.getUserData().pipe(
+        this.userDataService.getUserDataQueryOld().pipe(
           map((userData) => userData.map(user => user.id))
         ).subscribe(
           (userIds: string[]) => {
