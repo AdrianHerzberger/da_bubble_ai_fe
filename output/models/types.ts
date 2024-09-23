@@ -3,7 +3,7 @@ export interface GetUserByIdArgs {
 }
 
 export interface GetUserByIdResponse {
-    id: number;
+    userId: number;
     user_name: string;
     user_email: string;
     user_profile_picture_url: string;
@@ -30,6 +30,20 @@ export interface RegisterUserResponse {
     user_name: string | undefined;
     user_email: string;
     user_password: string;
+}
+
+export interface GetAllUsersArgs {
+    user_id: number;
+    user_email: number;
+    user_name: string;
+    user_profile_picture_url: string;
+}
+
+export interface GetAllUsersResponse {
+    user_id: number;
+    user_email: number;
+    user_name: string;
+    user_profile_picture_url: string;
 }
 
 export interface SignInUserBody {

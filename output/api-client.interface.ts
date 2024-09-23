@@ -7,7 +7,8 @@ import {
   GetUserByEmailArgs, GetUserByEmailResponse,
   RegisterUserBody, RegisterUserResponse,
   SignInUserBody, SignInUserResponse,
-  CreateChannelBody, CreateChannelResponse
+  CreateChannelBody, CreateChannelResponse,
+  GetAllUsersArgs, GetAllUsersResponse
 } from './models/types';
 
 
@@ -22,6 +23,11 @@ export interface APIClientInterface {
    * Response generated for [ 200 ] HTTP response code.
    */
   getApiUserEmail(args: GetUserByEmailArgs): Observable<GetUserByEmailResponse>;
+
+  /**
+   * Response generated for [ 200 ] HTTP response code.
+   */
+  getAllUsers(args: GetAllUsersArgs): Observable<GetAllUsersResponse[]>;
 
   /**
    * Response generated for [ 201 ] HTTP response code.

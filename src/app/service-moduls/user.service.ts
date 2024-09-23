@@ -2,7 +2,7 @@ import { Injectable } from '@angular/core';
 import { DocumentData, Firestore, QuerySnapshot, collection, doc, getDoc, getDocs, query } from '@angular/fire/firestore';
 import { Router } from '@angular/router';
 import { APIClient } from 'output';
-import { GetUserByIdResponse } from 'output/models/types';
+import { GetAllUsersResponse, GetUserByIdResponse } from 'output/models/types';
 import { BehaviorSubject, Observable, catchError, from, map, of } from 'rxjs';
 
 export interface UserDataInterface {
@@ -28,6 +28,8 @@ export interface UserDataTypes {
 export class UserDataService {
 
   userData: UserDataInterface[] = [];
+  private userDataTypes: GetAllUsersResponse[] = [];
+
 
   private accessToken: string | null = null;
 
@@ -36,7 +38,7 @@ export class UserDataService {
 
   constructor(
     public firestore: Firestore,
-    private router: Router, 
+    private router: Router,
     private apiClient: APIClient,
   ) {
   }
@@ -65,10 +67,10 @@ export class UserDataService {
 
   getCurrentUserId(): number | null {
     const currentUser = this.userDataSubject.value;
-    return currentUser ? currentUser.id : null;
+    return currentUser ? currentUser.userId : null;
   }
 
-  storedAccessToken(token : string) : void {
+  storedAccessToken(token: string): void {
     this.accessToken = token
   }
 
@@ -90,7 +92,20 @@ export class UserDataService {
       error: (error) => {
         console.error('Error retrieving user data:', error);
       }
-    })
+    });
+  }
+
+  getUserData(): GetAllUsersResponse[] {
+    this.apiClient.getAllUsers().subscribe({
+      next: (response) => {
+        this.userDataTypes = response;
+        console.log('Get all user data successfully:', response);
+      },
+      error: (error) => {
+        console.error('Error retrieving all user data:', error);
+      }
+    });
+    return this.userDataTypes;
   }
 
   getUserDataQueryOld(): Observable<UserDataInterface[]> {
@@ -118,7 +133,7 @@ export class UserDataService {
       })
     );
   }
-  
+
 
   /*------ Current-User / Users ------*/
   currentUser: string = '';

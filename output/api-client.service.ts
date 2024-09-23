@@ -15,6 +15,8 @@ import {
   SignInUserResponse,
   CreateChannelBody,
   CreateChannelResponse,
+  GetAllUsersArgs,
+  GetAllUsersResponse,
 } from './models/types';
 
 
@@ -57,7 +59,7 @@ export class APIClient implements APIClientInterface {
    * Response generated for [ 200 ] HTTP response code.
    */
   getApiUsersUserId(args: GetUserByIdArgs): Observable<GetUserByIdResponse> {
-    const path = `/api/users/${args.userId}`;
+    const path = `/api/get_user_by_id/${args.userId}`;
     const options: APIHttpOptions = {
       ...this.options,
     };
@@ -69,11 +71,23 @@ export class APIClient implements APIClientInterface {
    * Response generated for [ 200 ] HTTP response code.
    */
   getApiUserEmail(args: GetUserByEmailArgs): Observable<GetUserByEmailResponse> {
-    const path = `/api/users/${args.userEmail}`;
+    const path = `/api/get_user_by_email/${args.userEmail}`;
     const options: APIHttpOptions = {
       ...this.options,
     };
     return this.sendRequest<GetUserByEmailResponse>('GET', path, options);
+  }
+
+  /**
+   * Response generated for [ 200 ] HTTP response code.
+   */
+
+  getAllUsers(): Observable<GetAllUsersResponse[]> {
+    const path = `/api/all_users`;
+    const options: APIHttpOptions = {
+      ...this.options
+    }
+    return this.sendRequest<GetAllUsersResponse[]>('GET', path, options)
   }
 
   /**

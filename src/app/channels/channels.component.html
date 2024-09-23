@@ -128,7 +128,7 @@
                 </mat-radio-button>
             </mat-radio-group>
         </div>
-        <form (ngSubmit)="submitUser()" [formGroup]="userForm" *ngIf="openUserForm">
+        <form [formGroup]="userForm" (ngSubmit)="submitUser()" *ngIf="openUserForm">
             <div class="users-inputs">
                 <input class="user-name" type="text" placeholder="Name eingeben" formControlName="userName">
                 <div *ngIf="userForm.controls['userName'].invalid && userForm.controls['userName'].touched">
@@ -137,9 +137,9 @@
                     </div>
                 </div>
             </div>
+            <div class="btn-area">
+                <button class="btn-channel" type="submit">Create</button>
+            </div>
         </form>
-        <div class="btn-area">
-            <button class="btn-channel" type="submit">Create</button>
-        </div>
     </div>
 </mat-card>

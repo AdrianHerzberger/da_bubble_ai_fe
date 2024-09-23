@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+ import { Component, OnInit } from '@angular/core';
 import { UserDataService, UserDataInterface } from '../service-moduls/user.service';
 import { ChannelDataService, ChannelDataInterface, ChannelDataTypes } from '../service-moduls/channel.service';
 import { ChannelDataResolverService } from '../service-moduls/channel-data-resolver.service';
@@ -75,6 +75,7 @@ export class ChannelsComponent implements OnInit {
     this.getChannelData();
     this.getUserData();
     this.getDirectChatData();
+    this.userDataService.getUserData()
   }
 
   channelForm = new FormGroup({
@@ -95,9 +96,8 @@ export class ChannelsComponent implements OnInit {
   });
 
   submitChannel() {
-    console.log('createChannel called'); 
+    console.log('createChannel called');
     if (this.channelForm) {
-      debugger;
       const userId = this.userDataService.getCurrentUserId();
       console.log(userId)
       const channel: ChannelDataTypes = {
@@ -272,28 +272,38 @@ export class ChannelsComponent implements OnInit {
   }
 
   submitUser() {
-  //   let currentUserId = this.userDataService.getCurrentUserId();
-  //   if (this.userForm.valid && this.channelId) {
-  //     try {
-  //       const userName = this.userForm.value.userName;
-  //       const userData = this.userDataService.getUserData();
-  //       const selectedUserName = userData.find(user => user.name === userName);
+    if (this.userForm) {
+      const userName = this.userForm.value.userName?.toLowerCase();
+      if (this.selectedUserType === 'addByUser') {
+        const userData  = this.userDataService.getUserData()
+        console.log('users found:', userData);
 
-  //       if (!(matchingUser && this.selectedUserType === 'addByUser')) {
-  //         console.log('User not found.');
-  //         return
-  //       }
-  //   }
+        if (!userData || userData.length === 0) {
+          return; 
+        }
 
-  //   if (this.selectedChannel) {
-  //     try {
-  //       const matchingChannelFromList = this.selectedChannel;
-  //       const users = matchingChannelFromList.users;
-  //       if (!(matchingChannelFromList && this.selectedUserType === 'addFromGroup')) {
-  //         console.log('User not found.');
-  //         return;
-  //       }
-  //   }
+        const matchedUser = userData.find(user => 
+          user.user_name.toLowerCase() === userName
+        );
+  
+        if (matchedUser) {
+          console.log('Matched user found:', matchedUser.user_id);
+          this.channelDataService.addUserAssociationToChannel(matchedUser.user_id);
+        } else {
+          console.log('No matching user found.');
+        }
+      }
+    }
+  }
+
+  // if (this.selectedChannel) {
+  //   try {
+  //     const matchingChannelFromList = this.selectedChannel;
+  //     const users = matchingChannelFromList.users;
+  //     if (!(matchingChannelFromList && this.selectedUserType === 'addFromGroup')) {
+  //       console.log('User not found.');
+  //       return;
+  //     }
   // }
 
   // async addUserToChannel(users: string[], userName: string) {
@@ -323,7 +333,6 @@ export class ChannelsComponent implements OnInit {
   //   }
   //   this.userCard = false;
   // }
-  }
 }
 
 

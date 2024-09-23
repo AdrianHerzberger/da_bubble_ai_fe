@@ -92,6 +92,10 @@ export class ChannelDataService {
     });
   }
 
+  addUserAssociationToChannel(userId: number) {
+
+  }
+
   sendChannelData(channel: ChannelDataInterface): Observable<void> {
     const channels = collection(this.firestore, 'channels');
     const channelData = {
