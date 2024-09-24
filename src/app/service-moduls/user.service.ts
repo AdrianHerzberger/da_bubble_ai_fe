@@ -43,7 +43,7 @@ export class UserDataService {
   }
 
   getCurrentUserById(userId: number): void {
-    this.apiClient.getApiUserId({ userId }).subscribe({
+    this.apiClient.getApiUserId({ user_id: userId }).subscribe({
       next: (response) => {
         const userData = response;
         if (userData) {
@@ -60,7 +60,7 @@ export class UserDataService {
 
   getCurrentUserId(): number | null {
     const currentUser = this.userDataSubject.value;
-    return currentUser ? currentUser.userId : null;
+    return currentUser ? currentUser.user_id : null;
   }
 
   storedAccessToken(token: string): void {
@@ -72,9 +72,10 @@ export class UserDataService {
   }
 
   getCurrentUserByEmail(userEmail: string): void {
-    this.apiClient.getApiUserEmail({ userEmail }).subscribe({
+    this.apiClient.getApiUserEmail({ user_email: userEmail }).subscribe({
       next: (response) => {
-        const userId = response.id;
+        const userId = response.user_id;
+        console.log("Received user mail from body:", userId)
         if (userId) {
           this.router.navigateByUrl('/board/' + userId);
           this.getCurrentUserById(userId);

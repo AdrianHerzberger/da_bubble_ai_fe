@@ -53,7 +53,7 @@ export class AuthenticationService {
       next: (response) => {
         console.log('User registered successfully:', response);
       },
-      error: (error: any) => {
+      error: (error) => {
         console.error('Error registering user:', error);
       }
     })
@@ -72,7 +72,7 @@ export class AuthenticationService {
           this.userDataService.getCurrentUserByEmail(userEmail);
           this.userDataService.storedAccessToken(response.access_token)
         },
-        error: (error: any) => {
+        error: (error) => {
           console.error('Error logging in user:', error);
         }
       });

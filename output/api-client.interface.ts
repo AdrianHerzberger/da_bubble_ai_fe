@@ -9,7 +9,8 @@ import {
   SignInUserBody, SignInUserResponse,
   CreateChannelBody, CreateChannelResponse,
   GetAllUsersArgs, GetAllUsersResponse,
-  GetChannelByIdArgs, GetChannelByIdResponse
+  GetChannelByIdArgs, GetChannelByIdResponse,
+  CreateChannelUserAssociationBody, CreateChannelUserAssociationResponse
 } from './models/types';
 
 
@@ -39,13 +40,20 @@ export interface APIClientInterface {
    * Response generated for [ 201 ] HTTP response code.
    */
   postApiRegisterUser(body: RegisterUserBody): Observable<RegisterUserResponse>;
+
   /**
    * Response generated for [ 201 ] HTTP response code.
    */
   postApiSignInUser(body: SignInUserBody): Observable<SignInUserResponse>;
+
   /**
    * Response generated for [ 201 ] HTTP response code.
    */
   postApiCreateChannel(body: CreateChannelBody): Observable<CreateChannelResponse>;
+  
+   /**
+   * Response generated for [ 201 ] HTTP response code.
+   */
+  postApiChannelUserAssociation(body: CreateChannelUserAssociationBody): Observable<CreateChannelUserAssociationResponse>;
 
 }

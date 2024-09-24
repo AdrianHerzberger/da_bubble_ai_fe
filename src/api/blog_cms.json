@@ -103,6 +103,40 @@
         }
       }
     },
+    "/api/get_channel_by_id/{channel_id}": {
+      "get": {
+        "summary": "Get channel by ID",
+        "parameters": [
+          {
+            "name": "channel_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "User found",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "id": { "type": "integer" },
+                    "channel_name": { "type": "string" },
+                    "channel_description": { "type": "string" },
+                    "channel_color": { "type": "string" }
+                  }
+                }
+              }
+            }
+          },
+          "404": { "description": "User not found" }
+        }
+      }
+    },
     "/api/register_user": {
       "post": {
         "summary": "Register a new user",
@@ -242,37 +276,46 @@
         }
       }
     },
-    "/api/get_channel_by_id/{channel_id}": {
-      "get": {
-        "summary": "Get channel by ID",
-        "parameters": [
-          {
-            "name": "channel_id",
-            "in": "path",
-            "required": true,
-            "schema": {
-              "type": "integer"
+    "/api/create_user_association_to_channel": {
+      "post": {
+        "summary": "Create a channel user association",
+        "requestBody": {
+          "description": "Create a channel user association",
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "user_id": { "type": "number" },
+                  "channel_id": {"type": "number"}
+                },
+                "required": [
+                  "user_id",
+                  "channel_id"
+                ]
+              }
             }
           }
-        ],
+        },
         "responses": {
-          "200": {
-            "description": "Channel not found found",
+          "201": {
+            "description": "Channel user association created successfully",
             "content": {
               "application/json": {
                 "schema": {
                   "type": "object",
                   "properties": {
-                    "id": { "type": "integer" },
-                    "channel_name": { "type": "string" },
-                    "channel_description": { "type": "string" },
-                    "channel_color": { "type": "string" }
+                    "user_id": { "type": "number" },
+                    "channel_id": { "type": "number" }
                   }
                 }
               }
             }
           },
-          "404": { "description": "Channel not found found" }
+          "500": {
+            "description": "Error creating channel user association"
+          }
         }
       }
     }

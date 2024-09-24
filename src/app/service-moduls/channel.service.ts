@@ -60,11 +60,11 @@ export class ChannelDataService {
       return () => unsubscribe();
     });
   }
- 
+
   getCurrentChannelById(channelId: number) {
-    this.apiClient.getApiChannelById({channelId}).subscribe({
+    this.apiClient.getApiChannelById({ channel_id: channelId }).subscribe({
       next: (response) => {
-        const channelData =  response;
+        const channelData = response;
         if (channelData) {
           this.channelDataSubject.next(channelData);
         } else {
@@ -75,6 +75,11 @@ export class ChannelDataService {
         console.log('Error retrieving channel data', error);
       }
     });
+  }
+
+  getCurrentChannelId(): number | null {
+    const currentChannel = this.channelDataSubject.value;
+    return currentChannel ? currentChannel.channel_id : null;
   }
 
   createChannelData(channelName: string, channelDescription: string, channelColor: string, userId: number | null): void {
@@ -93,8 +98,8 @@ export class ChannelDataService {
 
     this.apiClient.postApiCreateChannel(requestBody, { headers }).subscribe({
       next: (response) => {
-        const channelId = response.channelId
-        if(channelId) {
+        const channelId = response.channel_id
+        if (channelId) {
           this.getCurrentChannelById(channelId);
         }
       },
@@ -104,8 +109,18 @@ export class ChannelDataService {
     });
   }
 
-  addUserAssociationToChannel(userId: number) {
-
+  addUserAssociationToChannel(userId: number, channelId: number | null) {
+    this.apiClient.postApiChannelUserAssociation({
+      user_id: userId,
+      channel_id: channelId,
+    }).subscribe({
+      next: (response) => {
+        console.log('Channel user association created successfully:', response)
+      },
+      error: (error) => {
+        console.log('Error creating channel user association.', error)
+      }
+    })
   }
 
   sendChannelData(channel: ChannelDataInterface): Observable<void> {

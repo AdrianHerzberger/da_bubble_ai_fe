@@ -19,6 +19,8 @@ import {
   GetAllUsersResponse,
   GetChannelByIdArgs,
   GetChannelByIdResponse,
+  CreateChannelUserAssociationBody,
+  CreateChannelUserAssociationResponse
 } from './models/types';
 
 
@@ -61,7 +63,7 @@ export class APIClient implements APIClientInterface {
    * Response generated for [ 200 ] HTTP response code.
    */
   getApiUserId(args: GetUserByIdArgs): Observable<GetUserByIdResponse> {
-    const path = `/api/get_user_by_id/${args.userId}`;
+    const path = `/api/get_user_by_id/${args.user_id}`;
     const options: APIHttpOptions = {
       ...this.options,
     };
@@ -73,7 +75,7 @@ export class APIClient implements APIClientInterface {
    * Response generated for [ 200 ] HTTP response code.
    */
   getApiUserEmail(args: GetUserByEmailArgs): Observable<GetUserByEmailResponse> {
-    const path = `/api/get_user_by_email/${args.userEmail}`;
+    const path = `/api/get_user_by_email/${args.user_email}`;
     const options: APIHttpOptions = {
       ...this.options,
     };
@@ -97,7 +99,7 @@ export class APIClient implements APIClientInterface {
    */
 
   getApiChannelById(args: GetChannelByIdArgs): Observable<GetChannelByIdResponse> {
-    const path = `/api/get_channel_by_id/${args.channelId}`;
+    const path = `/api/get_channel_by_id/${args.channel_id}`;
     const options: APIHttpOptions = {
       ...this.options
     }
@@ -127,21 +129,32 @@ export class APIClient implements APIClientInterface {
 
     return this.sendRequest<SignInUserResponse>('POST', path, options, body);
   }
-  
+
   /**
    * Response generated for [ 201 ] HTTP response code.
    */
   postApiCreateChannel(body: CreateChannelBody, options?: { headers?: HttpHeaders }): Observable<CreateChannelResponse> {
     const path = `/api/create_channel`;
     const requestOptions: APIHttpOptions = {
-      ...this.options, 
+      ...this.options,
       headers: options?.headers || this.options.headers
     };
-  
+
     return this.sendRequest<CreateChannelResponse>('POST', path, requestOptions, body);
   }
-  
-  
+
+  /**
+   * Response generated for [ 201 ] HTTP response code.
+   */
+  postApiChannelUserAssociation(body: CreateChannelUserAssociationBody): Observable<CreateChannelUserAssociationResponse> {
+    const path = `/api/create_user_association_to_channel`;
+    const options: APIHttpOptions = {
+      ...this.options,
+    };
+
+    return this.sendRequest<CreateChannelUserAssociationResponse>('POST', path, options, body);
+  }
+
   private sendRequest<T>(method: string, path: string, options: HttpOptions, body?: any): Observable<T> {
     switch (method) {
       case 'DELETE':

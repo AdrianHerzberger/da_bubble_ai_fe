@@ -1,20 +1,20 @@
 export interface GetUserByIdArgs {
-    userId: number;
+    user_id: number;
 }
 
 export interface GetUserByIdResponse {
-    userId: number;
+    user_id: number;
     user_name: string;
     user_email: string;
     user_profile_picture_url: string;
 }
 
 export interface GetUserByEmailArgs {
-    userEmail: string;
+    user_email: string;
 }
 
 export interface GetUserByEmailResponse {
-    id: number;
+    user_id: number;
     user_name: string;
     user_email: string;
     user_profile_picture_url: string;
@@ -67,7 +67,7 @@ export interface CreateChannelBody {
 }
 
 export interface CreateChannelResponse {
-    channelId: number;
+    channel_id: number;
     channel_name: string;
     channel_description: string;
     channel_color: string;
@@ -75,14 +75,25 @@ export interface CreateChannelResponse {
 }
 
 export interface GetChannelByIdArgs {
-    channelId: number;
+    channel_id: number;
 }
 
 export interface GetChannelByIdResponse {
+    channel_id: number;
     channel_name: string;
     channel_description: string;
     channel_color: string;
     user_id: number | null,
+}
+
+export interface CreateChannelUserAssociationBody {
+    user_id: number;
+    channel_id: number | null;
+}
+
+export interface CreateChannelUserAssociationResponse {
+    user_id: number;
+    channel_id: number | null;
 }
 
 

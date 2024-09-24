@@ -1,4 +1,4 @@
- import { Component, OnInit } from '@angular/core';
+import { Component, OnInit } from '@angular/core';
 import { UserDataService, UserDataInterface } from '../service-moduls/user.service';
 import { ChannelDataService, ChannelDataInterface } from '../service-moduls/channel.service';
 import { ChannelDataResolverService } from '../service-moduls/channel-data-resolver.service';
@@ -236,22 +236,24 @@ export class ChannelsComponent implements OnInit {
 
   submitUser() {
     if (this.userForm) {
+      const currentChannel = this.channelDataService.getCurrentChannelId();
+      console.log("Log the current channel ID:", currentChannel);
       const userName = this.userForm.value.userName?.toLowerCase();
       if (this.selectedUserType === 'addByUser') {
-        const userData  = this.userDataService.getUserData()
+        const userData = this.userDataService.getUserData()
         console.log('users found:', userData);
 
         if (!userData || userData.length === 0) {
-          return; 
+          return;
         }
 
-        const matchedUser = userData.find(user => 
+        const matchedUser = userData.find(user =>
           user.user_name.toLowerCase() === userName
         );
-  
+
         if (matchedUser) {
-          console.log('Matched user found:', matchedUser.user_id);
-          this.channelDataService.addUserAssociationToChannel(matchedUser.user_id);
+          console.log(matchedUser.user_id)
+          this.channelDataService.addUserAssociationToChannel(matchedUser.user_id, currentChannel);
         } else {
           console.log('No matching user found.');
         }
@@ -259,43 +261,43 @@ export class ChannelsComponent implements OnInit {
     }
   }
 
-  // if (this.selectedChannel) {
-  //   try {
-  //     const matchingChannelFromList = this.selectedChannel;
-  //     const users = matchingChannelFromList.users;
-  //     if (!(matchingChannelFromList && this.selectedUserType === 'addFromGroup')) {
-  //       console.log('User not found.');
-  //       return;
-  //     }
-  // }
+  /* if (this.selectedChannel) {
+    try {
+      const matchingChannelFromList = this.selectedChannel;
+      const users = matchingChannelFromList.users;
+      if (!(matchingChannelFromList && this.selectedUserType === 'addFromGroup')) {
+        console.log('User not found.');
+        return;
+      }
+  }
 
-  // async addUserToChannel(users: string[], userName: string) {
-  //   try {
-  //     const channelDoc = doc(this.firestore, 'channels', this.channelId);
-  //     const filteredUsers = users.filter(user => user !== userName);
-  //     console.log(filteredUsers);
-  //     await updateDoc(channelDoc, {
-  //       users: arrayUnion(...filteredUsers)
-  //     });
-  //     console.log('User added successfully.');
-  //   } catch (error) {
-  //     console.error('Error adding user:', error);
-  //   }
-  // }
+  async addUserToChannel(users: string[], userName: string) {
+    try {
+      const channelDoc = doc(this.firestore, 'channels', this.channelId);
+      const filteredUsers = users.filter(user => user !== userName);
+      console.log(filteredUsers);
+      await updateDoc(channelDoc, {
+        users: arrayUnion(...filteredUsers)
+      });
+      console.log('User added successfully.');
+    } catch (error) {
+      console.error('Error adding user:', error);
+    }
+  }
 
-  // async addGroupToChannel(userGroup: string[]) {
-  //   try {
-  //     const channelDoc = doc(this.firestore, 'channels', this.channelId);
-  //     const usersToAdd = userGroup;
-  //     await updateDoc(channelDoc, {
-  //       users: arrayUnion(...usersToAdd)
-  //     });
-  //     console.log('Users added successfully.');
-  //   } catch (error) {
-  //     console.error('Error adding users:', error);
-  //   }
-  //   this.userCard = false;
-  // }
+  async addGroupToChannel(userGroup: string[]) {
+    try {
+      const channelDoc = doc(this.firestore, 'channels', this.channelId);
+      const usersToAdd = userGroup;
+      await updateDoc(channelDoc, {
+        users: arrayUnion(...usersToAdd)
+      });
+      console.log('Users added successfully.');
+    } catch (error) {
+      console.error('Error adding users:', error);
+    }
+    this.userCard = false;
+  } */
 }
 
 
