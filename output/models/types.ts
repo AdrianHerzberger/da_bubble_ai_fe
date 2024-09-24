@@ -67,6 +67,18 @@ export interface CreateChannelBody {
 }
 
 export interface CreateChannelResponse {
+    channelId: number;
+    channel_name: string;
+    channel_description: string;
+    channel_color: string;
+    user_id: number | null,
+}
+
+export interface GetChannelByIdArgs {
+    channelId: number;
+}
+
+export interface GetChannelByIdResponse {
     channel_name: string;
     channel_description: string;
     channel_color: string;

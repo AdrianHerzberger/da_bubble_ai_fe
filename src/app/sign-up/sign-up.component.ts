@@ -4,7 +4,7 @@ import { ValidationService } from '../service-moduls/validation.service';
 import { AuthenticationService } from '../service-moduls/authentication.service';
 import { Router } from '@angular/router';
 import { APIClient } from 'output';
-import { UserDataService, UserDataInterface, UserDataTypes } from '../service-moduls/user.service';
+import { UserDataService } from '../service-moduls/user.service';
 
 @Component({
   selector: 'app-sign-up',
@@ -43,9 +43,8 @@ export class SignUpComponent {
   });
 
   constructor(
-    private router: Router, 
-    private userDataService: UserDataService,
-    public ValidationService: ValidationService, 
+    private router: Router,
+    public ValidationService: ValidationService,
     public authenticationService: AuthenticationService,
     public apiClient: APIClient
   ) { }
@@ -53,16 +52,14 @@ export class SignUpComponent {
   signUp() {
     this.submitted = true;
     if (this.signUpForm.valid) {
-      const user:  UserDataTypes = {
-        userName: this.signUpForm.value.name?.toLowerCase() || '',
-        userEmail: this.signUpForm.value.email?.toLowerCase() || '',
-        userPassword: this.signUpForm.value.password ?? ''
-      }
-      this.authenticationService.registerUser(user.userName, user.userEmail, user.userPassword)
-      this.showsNotificationAnimation();
-      this.resetForm();
-      this.router.navigateByUrl("/sign-in");
+      const userName = this.signUpForm.value.name?.toLowerCase() || '';
+      const userEmail = this.signUpForm.value.email?.toLowerCase() || '';
+      const userPassword = this.signUpForm.value.password ?? '';
+      this.authenticationService.registerUser(userName, userEmail, userPassword)
     }
+    this.showsNotificationAnimation();
+    this.resetForm();
+    this.router.navigateByUrl("/sign-in");
     this.disableForm();
   }
 

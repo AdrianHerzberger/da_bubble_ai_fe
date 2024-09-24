@@ -2,8 +2,7 @@ import { Component } from '@angular/core';
 import { FormControl, FormGroup, Validators } from '@angular/forms';
 import { AuthenticationService } from '../service-moduls/authentication.service';
 import { Router } from '@angular/router';
-import { APIClient } from 'output';
-import { UserDataService, UserDataTypes } from '../service-moduls/user.service';
+
 
 @Component({
   selector: 'app-sign-in',
@@ -30,11 +29,9 @@ export class SignInComponent {
   signIn() {
     this.submitted = true;
     if (this.signInForm.valid) {
-      const user: UserDataTypes = {
-        userEmail: this.signInForm.value.email?.toLowerCase() || '',
-        userPassword: this.signInForm.value.password ?? '',
-      }
-      this.authenticationService.signInUser(user.userEmail, user.userPassword)
+      const userEmail = this.signInForm.value.email?.toLowerCase() || '';
+      const userPassword = this.signInForm.value.password ?? '';
+      this.authenticationService.signInUser(userEmail, userPassword)
       this.isFormValid();
     } else if (this.signInForm.invalid) {
       this.isFormInvalid();

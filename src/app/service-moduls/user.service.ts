@@ -3,7 +3,7 @@ import { DocumentData, Firestore, QuerySnapshot, collection, doc, getDoc, getDoc
 import { Router } from '@angular/router';
 import { APIClient } from 'output';
 import { GetAllUsersResponse, GetUserByIdResponse } from 'output/models/types';
-import { BehaviorSubject, Observable, catchError, from, map, of } from 'rxjs';
+import { BehaviorSubject, Observable, from, map, of } from 'rxjs';
 
 export interface UserDataInterface {
   id: string;
@@ -12,13 +12,6 @@ export interface UserDataInterface {
   picture?: string;
   createdAt?: any;
   status?: any;
-}
-
-export interface UserDataTypes {
-  userId?: number;
-  userName?: string;
-  userPassword: string;
-  userEmail: string;
 }
 
 @Injectable({
@@ -50,7 +43,7 @@ export class UserDataService {
   }
 
   getCurrentUserById(userId: number): void {
-    this.apiClient.getApiUsersUserId({ userId }).subscribe({
+    this.apiClient.getApiUserId({ userId }).subscribe({
       next: (response) => {
         const userData = response;
         if (userData) {
@@ -96,7 +89,7 @@ export class UserDataService {
   }
 
   getUserData(): GetAllUsersResponse[] {
-    this.apiClient.getAllUsers().subscribe({
+    this.apiClient.getApiAllUsers().subscribe({
       next: (response) => {
         this.userDataTypes = response;
         console.log('Get all user data successfully:', response);

@@ -1,6 +1,6 @@
  import { Component, OnInit } from '@angular/core';
 import { UserDataService, UserDataInterface } from '../service-moduls/user.service';
-import { ChannelDataService, ChannelDataInterface, ChannelDataTypes } from '../service-moduls/channel.service';
+import { ChannelDataService, ChannelDataInterface } from '../service-moduls/channel.service';
 import { ChannelDataResolverService } from '../service-moduls/channel-data-resolver.service';
 import { UserDataResolveService } from '../service-moduls/user-data-resolve.service';
 import { ChatBehaviorService } from '../service-moduls/chat-behavior.service';
@@ -72,9 +72,7 @@ export class ChannelsComponent implements OnInit {
         this.chatBehavior.headerMoblieView = false;
       }
     });
-    this.getChannelData();
     this.getUserData();
-    this.getDirectChatData();
     this.userDataService.getUserData()
   }
 
@@ -96,18 +94,14 @@ export class ChannelsComponent implements OnInit {
   });
 
   submitChannel() {
-    console.log('createChannel called');
     if (this.channelForm) {
-      const userId = this.userDataService.getCurrentUserId();
-      console.log(userId)
-      const channel: ChannelDataTypes = {
-        channelName: this.channelForm.value.channelName || '',
-        channelDescription: this.channelForm.value.channelDescription || '',
-        userId: userId,
-        color: this.newColor(),
-      };
-      console.log("Channel created with the data :", channel)
-      this.channelDataService.createChannelData(channel.channelName, channel.channelDescription, channel.color, channel.userId);
+      const currentUserId = this.userDataService.getCurrentUserId();
+      const channelName = this.channelForm.value.channelName || '';
+      const channelDescription = this.channelForm.value.channelDescription || '';
+      const userId = currentUserId;
+      const color = this.newColor()
+
+      this.channelDataService.createChannelData(channelName, channelDescription, color, userId);
       this.channelForm.reset();
       this.channelCard = false;
       this.userCard = true;
@@ -119,37 +113,6 @@ export class ChannelsComponent implements OnInit {
       userData => {
         this.userData = userData;
         /* console.log('Subscribed data users:', userData); */
-      },
-      error => {
-        console.error('Error retrieving user data:', error);
-      }
-    );
-  }
-
-  async getChannelData() {
-    this.channelDataService.getChannelData().subscribe(
-      channelData => {
-        this.channelData = channelData;
-        if (this.channelData.length > 0) {
-          this.availableChannels = this.channelData.filter(channel => channel.users.includes(this.userDataService.currentUser));
-          if (this.availableChannels) {
-            this.selectedChannel = this.availableChannels[0];
-            this.channelDataResolver.sendDataChannels(this.selectedChannel);
-          }
-        }
-        console.log('Subscribed data channels:', channelData);
-      },
-      error => {
-        console.error('Error retrieving user data:', error);
-      }
-    );
-  }
-
-  async getDirectChatData() {
-    this.directMessageService.getUserDataDirect().subscribe(
-      directChatData => {
-        this.directChatData = directChatData;
-        console.log('Subscribed data direct User in chat:', directChatData);
       },
       error => {
         console.error('Error retrieving user data:', error);

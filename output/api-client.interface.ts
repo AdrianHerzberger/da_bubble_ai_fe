@@ -8,7 +8,8 @@ import {
   RegisterUserBody, RegisterUserResponse,
   SignInUserBody, SignInUserResponse,
   CreateChannelBody, CreateChannelResponse,
-  GetAllUsersArgs, GetAllUsersResponse
+  GetAllUsersArgs, GetAllUsersResponse,
+  GetChannelByIdArgs, GetChannelByIdResponse
 } from './models/types';
 
 
@@ -17,7 +18,7 @@ export interface APIClientInterface {
   /**
    * Response generated for [ 200 ] HTTP response code.
    */
-  getApiUsersUserId(args: GetUserByIdArgs): Observable<GetUserByIdResponse>;
+  getApiUserId(args: GetUserByIdArgs): Observable<GetUserByIdResponse>;
 
   /**
    * Response generated for [ 200 ] HTTP response code.
@@ -27,7 +28,12 @@ export interface APIClientInterface {
   /**
    * Response generated for [ 200 ] HTTP response code.
    */
-  getAllUsers(args: GetAllUsersArgs): Observable<GetAllUsersResponse[]>;
+  getApiAllUsers(args: GetAllUsersArgs): Observable<GetAllUsersResponse[]>;
+
+  /**
+   * Response generated for [ 200 ] HTTP response code.
+   */
+  getApiChannelById(args: GetChannelByIdArgs): Observable<GetChannelByIdResponse>;
 
   /**
    * Response generated for [ 201 ] HTTP response code.
