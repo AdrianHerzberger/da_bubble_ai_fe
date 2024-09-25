@@ -10,7 +10,8 @@ import {
   CreateChannelBody, CreateChannelResponse,
   GetAllUsersArgs, GetAllUsersResponse,
   GetChannelByIdArgs, GetChannelByIdResponse,
-  CreateChannelUserAssociationBody, CreateChannelUserAssociationResponse
+  CreateChannelUserAssociationBody, CreateChannelUserAssociationResponse,
+  GetAllChannelsArgs, GetAllChannelsRespsonse
 } from './models/types';
 
 
@@ -35,6 +36,11 @@ export interface APIClientInterface {
    * Response generated for [ 200 ] HTTP response code.
    */
   getApiChannelById(args: GetChannelByIdArgs): Observable<GetChannelByIdResponse>;
+
+  /**
+   * Response generated for [ 200 ] HTTP response code.
+   */
+  getApiAllChannels(args: GetAllChannelsArgs): Observable<GetAllChannelsRespsonse[]>
 
   /**
    * Response generated for [ 201 ] HTTP response code.

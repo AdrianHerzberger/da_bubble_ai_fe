@@ -162,7 +162,7 @@ export class ThreadsComponent implements OnInit, OnChanges {
 
   renderChatByChannelId(channel: string) {
     if (channel) {
-      this.channelDataService.getChannelData().subscribe(
+      this.channelDataService.getChannelDataOld().subscribe(
         (channelData: ChannelDataInterface[]) => {
           const filterChannel = channelData.filter((channelItem) => channelItem.id === channel);
           this.channelData = filterChannel;
@@ -212,7 +212,7 @@ export class ThreadsComponent implements OnInit, OnChanges {
     }
   }
 
-  isNewDay( currentMessage: MessageDataInterface, previousMessage: MessageDataInterface): boolean {
+  isNewDay(currentMessage: MessageDataInterface, previousMessage: MessageDataInterface): boolean {
     if (!previousMessage) {
       return true;
     }
@@ -245,7 +245,7 @@ export class ThreadsComponent implements OnInit, OnChanges {
         emojis: [],
         thread: this.threadDataService.threadId,
         channel: 'Thread Message',
-        mentionedUser:  this.mentionService.mentionInMessage,
+        mentionedUser: this.mentionService.mentionInMessage,
       };
 
       if (this.emojipickeractive) {
@@ -275,13 +275,13 @@ export class ThreadsComponent implements OnInit, OnChanges {
   }
 
 
-  reaction(messageEmoji:string, index:number) {
+  reaction(messageEmoji: string, index: number) {
     if (this.emojisClickedBefore === index) {
       this.hideEmojis(this.emojisClickedBefore);
       this.emojisClickedBefore = undefined;
     } else {
       if (this.emojisClickedBefore !== null) {
-       this.hideEmojis(this.emojisClickedBefore);
+        this.hideEmojis(this.emojisClickedBefore);
       }
       this.showEmojis(index);
       this.emojisClickedBefore = index;
@@ -289,7 +289,7 @@ export class ThreadsComponent implements OnInit, OnChanges {
   }
 
 
-  showEmojis(emojiIndex:number) {
+  showEmojis(emojiIndex: number) {
     let button = document.getElementById(`reaction-button-thread${emojiIndex}`)
     const emojiElement = document.getElementById(`reaction-in-thread${emojiIndex}`);
     if (emojiElement) {
@@ -301,10 +301,10 @@ export class ThreadsComponent implements OnInit, OnChanges {
 
 
 
-  hideEmojis(emojiIndex:any) {
+  hideEmojis(emojiIndex: any) {
     let button = document.getElementById(`reaction-button-thread${emojiIndex}`)
     const emojiElement = document.getElementById(`reaction-in-thread${emojiIndex}`);
-    
+
     if (emojiElement) {
       emojiElement.classList.remove('showEmojis');
     }
@@ -314,7 +314,7 @@ export class ThreadsComponent implements OnInit, OnChanges {
   }
 
 
-  reactWithEmoji(emoji: string, index: number, messageId: string, message:MessageDataInterface) {
+  reactWithEmoji(emoji: string, index: number, messageId: string, message: MessageDataInterface) {
     let emojiArray = message.emojis;
 
     emojiArray.forEach((emoj: { [x: string]: any[]; }) => {
@@ -473,7 +473,7 @@ export class ThreadsComponent implements OnInit, OnChanges {
     this.threadDataService.threadOpen = false;
 
     const channel = this.channelDataService.channelData.filter(channel => channel.id.includes(id));
-    if(channel) {
+    if (channel) {
       this.chatBehavior.isChatOpenResponsive = true;
       this.chatBehavior.isThreadOpenResponsive = false;
       this.chatBehavior.isDirectChatToUserOpenResponsive = false;

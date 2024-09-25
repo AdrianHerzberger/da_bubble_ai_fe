@@ -20,7 +20,9 @@ import {
   GetChannelByIdArgs,
   GetChannelByIdResponse,
   CreateChannelUserAssociationBody,
-  CreateChannelUserAssociationResponse
+  CreateChannelUserAssociationResponse,
+  GetAllChannelsArgs,
+  GetAllChannelsRespsonse
 } from './models/types';
 
 
@@ -85,7 +87,6 @@ export class APIClient implements APIClientInterface {
   /**
    * Response generated for [ 200 ] HTTP response code.
    */
-
   getApiAllUsers(): Observable<GetAllUsersResponse[]> {
     const path = `/api/all_users`;
     const options: APIHttpOptions = {
@@ -97,7 +98,6 @@ export class APIClient implements APIClientInterface {
   /**
    * Response generated for [ 200 ] HTTP response code.
    */
-
   getApiChannelById(args: GetChannelByIdArgs): Observable<GetChannelByIdResponse> {
     const path = `/api/get_channel_by_id/${args.channel_id}`;
     const options: APIHttpOptions = {
@@ -106,6 +106,17 @@ export class APIClient implements APIClientInterface {
     return this.sendRequest<GetChannelByIdResponse>('GET', path, options)
   }
 
+  /**
+   * Response generated for [ 200 ] HTTP response code.
+   */
+  getApiAllChannels(): Observable<GetAllChannelsRespsonse[]> {
+    const path = `/api/all_channels`;
+    const options: APIHttpOptions = {
+      ...this.options
+    }
+    return this.sendRequest<GetAllChannelsRespsonse[]>('GET', path, options)
+  }
+  
   /**
    * Response generated for [ 201 ] HTTP response code.
    */

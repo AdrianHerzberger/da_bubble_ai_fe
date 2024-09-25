@@ -1,5 +1,4 @@
 import { NgModule } from '@angular/core';
-import { ChatComponent } from './chat/chat.component';
 import { RouterModule, Routes } from '@angular/router';
 import { SignInComponent } from './sign-in/sign-in.component';
 import { SignUpComponent } from './sign-up/sign-up.component';
@@ -9,7 +8,9 @@ import { AuthActionComponent } from './auth-action/auth-action.component';
 import { StartscreenComponent } from './startscreen/startscreen.component';
 import { ImprintComponent } from './imprint/imprint.component';
 import { LegalComponent } from './legal/legal.component';
+import { ChannelsComponent } from './channels/channels.component';
 import { HeaderBarComponent } from './header-bar/header-bar.component';
+
 
 const routes: Routes = [
   { path: '', component: StartscreenComponent },
@@ -17,10 +18,14 @@ const routes: Routes = [
   { path: 'sign-up', component: SignUpComponent },
   { path: 'reset-password', component: PasswordResetComponent },
   { path: 'auth-action', component: AuthActionComponent },
-  { path: 'board/:id', component: BoardComponent },
+  {
+    path: 'board/:userId', component: BoardComponent, children: [
+      { path: 'channel', component: ChannelsComponent },
+      { path: 'channel/:channelId', component: ChannelsComponent },
+    ]
+  },
   { path: 'imprint', component: ImprintComponent },
-  { path: 'legal', component: LegalComponent},
-  
+  { path: 'legal', component: LegalComponent },
 ];
 
 @NgModule({

@@ -5,11 +5,12 @@ import { ChannelDataResolverService } from '../service-moduls/channel-data-resol
 import { UserDataResolveService } from '../service-moduls/user-data-resolve.service';
 import { ChatBehaviorService } from '../service-moduls/chat-behavior.service';
 import { trigger, state, style, animate, transition } from '@angular/animations';
-import { FormBuilder, FormControl, FormGroup, Validators } from '@angular/forms';
-import { Firestore, addDoc, arrayUnion, collection, doc, getDoc, onSnapshot, updateDoc } from '@angular/fire/firestore';
+import { FormControl, FormGroup, Validators } from '@angular/forms';
 import { DirectMessageToUserService } from '../service-moduls/direct-message-to-user.service';
-import { DirectMessageService, DirectMessageInterface } from '../service-moduls/direct-message.service';
+import { DirectMessageInterface } from '../service-moduls/direct-message.service';
 import { BreakpointObserver } from '@angular/cdk/layout';
+import { ActivatedRoute } from '@angular/router';
+import { GetAllChannelsRespsonse } from 'output/models/types';
 
 
 @Component({
@@ -43,23 +44,24 @@ export class ChannelsComponent implements OnInit {
   userData: UserDataInterface[] = [];
   directChatData: UserDataInterface[] = [];
   channelData: ChannelDataInterface[] = [];
-  availableChannels: ChannelDataInterface[] = [];
+  availableChannels: GetAllChannelsRespsonse[] = [];
 
-  channelId: string = '';
   selectedUserType: string = '';
   createByUser: string = '';
   selectedChannel: ChannelDataInterface | null = null;
   selectedUser: UserDataInterface | null = null;
   selectedDirectChat: DirectMessageInterface | null = null;
 
+  userId!: number | null;
+  channelId!: number | null;
+
   constructor(
-    private firestore: Firestore,
     private userDataService: UserDataService,
     private channelDataService: ChannelDataService,
     private channelDataResolver: ChannelDataResolverService,
-    private directMessageService: DirectMessageService,
     private userDataResolver: UserDataResolveService,
     public chatBehavior: ChatBehaviorService,
+    private route: ActivatedRoute,
     public directMessageToUserService: DirectMessageToUserService,
     private breakpointObserver: BreakpointObserver,
   ) { }
@@ -72,8 +74,13 @@ export class ChannelsComponent implements OnInit {
         this.chatBehavior.headerMoblieView = false;
       }
     });
-    this.getUserData();
+
     this.userDataService.getUserData()
+
+    this.route.parent?.params.subscribe(params => {
+      this.userId = +params['userId']; 
+      console.log('Received user ID from parent route:', this.userId);
+    });
   }
 
   channelForm = new FormGroup({
@@ -95,10 +102,10 @@ export class ChannelsComponent implements OnInit {
 
   submitChannel() {
     if (this.channelForm) {
-      const currentUserId = this.userDataService.getCurrentUserId();
+      //const currentUserId = this.userDataService.getCurrentUserId();
       const channelName = this.channelForm.value.channelName || '';
       const channelDescription = this.channelForm.value.channelDescription || '';
-      const userId = currentUserId;
+      const userId = this.userId;
       const color = this.newColor()
 
       this.channelDataService.createChannelData(channelName, channelDescription, color, userId);
@@ -106,18 +113,6 @@ export class ChannelsComponent implements OnInit {
       this.channelCard = false;
       this.userCard = true;
     }
-  }
-
-  async getUserData() {
-    this.userDataService.getUserDataQueryOld().subscribe(
-      userData => {
-        this.userData = userData;
-        /* console.log('Subscribed data users:', userData); */
-      },
-      error => {
-        console.error('Error retrieving user data:', error);
-      }
-    );
   }
 
   toggle() {
@@ -240,7 +235,7 @@ export class ChannelsComponent implements OnInit {
       console.log("Log the current channel ID:", currentChannel);
       const userName = this.userForm.value.userName?.toLowerCase();
       if (this.selectedUserType === 'addByUser') {
-        const userData = this.userDataService.getUserData()
+        const userData = this.userDataService.getUserData();
         console.log('users found:', userData);
 
         if (!userData || userData.length === 0) {
@@ -258,6 +253,7 @@ export class ChannelsComponent implements OnInit {
           console.log('No matching user found.');
         }
       }
+      this.userCard = false;
     }
   }
 

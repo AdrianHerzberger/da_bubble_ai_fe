@@ -19,11 +19,10 @@ export interface UserDataInterface {
 })
 
 export class UserDataService {
-
   userData: UserDataInterface[] = [];
-  private userDataTypes: GetAllUsersResponse[] = [];
+  private userDataResolved: GetAllUsersResponse[] = [];
 
-
+  public userId: number | null = null;
   private accessToken: string | null = null;
 
   private userDataSubject = new BehaviorSubject<GetUserByIdResponse | null>(null);
@@ -42,7 +41,7 @@ export class UserDataService {
     return profilePictureUrl;
   }
 
-  getCurrentUserById(userId: number): void {
+  getCurrentUserById(userId: number | null): void {
     this.apiClient.getApiUserId({ user_id: userId }).subscribe({
       next: (response) => {
         const userData = response;
@@ -77,7 +76,7 @@ export class UserDataService {
         const userId = response.user_id;
         console.log("Received user mail from body:", userId)
         if (userId) {
-          this.router.navigateByUrl('/board/' + userId);
+          this.router.navigateByUrl(`/board/${userId}/channel`);
           this.getCurrentUserById(userId);
         } else {
           console.error('User ID not found in response.');
@@ -92,14 +91,14 @@ export class UserDataService {
   getUserData(): GetAllUsersResponse[] {
     this.apiClient.getApiAllUsers().subscribe({
       next: (response) => {
-        this.userDataTypes = response;
+        this.userDataResolved = response;
         console.log('Get all user data successfully:', response);
       },
       error: (error) => {
         console.error('Error retrieving all user data:', error);
       }
     });
-    return this.userDataTypes;
+    return this.userDataResolved;
   }
 
   getUserDataQueryOld(): Observable<UserDataInterface[]> {

@@ -4,7 +4,8 @@ import { APIClient } from 'output';
 import { BehaviorSubject, Observable, from, map } from 'rxjs';
 import { UserDataService } from './user.service';
 import { HttpHeaders } from '@angular/common/http';
-import { GetChannelByIdResponse } from 'output/models/types';
+import { GetAllChannelsRespsonse, GetChannelByIdResponse } from 'output/models/types';
+import { Router } from '@angular/router';
 
 export interface ChannelDataInterface {
   id?: any;
@@ -26,13 +27,16 @@ export class ChannelDataService {
 
   channelData: ChannelDataInterface[] = [];
 
+  private channelDataResovler: GetAllChannelsRespsonse[] = []
+
   constructor(
     public firestore: Firestore,
+    private router: Router,
     private apiClient: APIClient,
     private userDataService: UserDataService,
   ) { }
 
-  getChannelData(): Observable<ChannelDataInterface[]> {
+  getChannelDataOld(): Observable<ChannelDataInterface[]> {
     const channelCollection = collection(this.firestore, 'channels');
     const q = query(channelCollection);
 
@@ -100,6 +104,7 @@ export class ChannelDataService {
       next: (response) => {
         const channelId = response.channel_id
         if (channelId) {
+          this.router.navigateByUrl(`/board/${userId}/channel/${channelId}`);
           this.getCurrentChannelById(channelId);
         }
       },
@@ -121,6 +126,19 @@ export class ChannelDataService {
         console.log('Error creating channel user association.', error)
       }
     })
+  }
+
+  getChannelData() : GetAllChannelsRespsonse[] {
+    this.apiClient.getApiAllChannels().subscribe({
+      next: (response) => {
+        this.channelDataResovler = response;
+        console.log('Get all channel data successfully:', response);
+      },
+      error: (error) => {
+        console.error('Error retrieving all channel data:', error);
+      }
+    });
+    return this.channelDataResovler;
   }
 
   sendChannelData(channel: ChannelDataInterface): Observable<void> {

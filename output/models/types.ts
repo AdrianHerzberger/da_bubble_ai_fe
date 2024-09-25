@@ -1,5 +1,5 @@
 export interface GetUserByIdArgs {
-    user_id: number;
+    user_id: number | null;
 }
 
 export interface GetUserByIdResponse {
@@ -94,6 +94,20 @@ export interface CreateChannelUserAssociationBody {
 export interface CreateChannelUserAssociationResponse {
     user_id: number;
     channel_id: number | null;
+}
+
+export interface GetAllChannelsArgs {
+    channel_id: number;
+    channel_name: string;
+    channel_description: string;
+    channel_color: string;
+}
+
+export interface GetAllChannelsRespsonse {
+    channel_id: number;
+    channel_name: string;
+    channel_description: string;
+    channel_color: string;
 }
 
 

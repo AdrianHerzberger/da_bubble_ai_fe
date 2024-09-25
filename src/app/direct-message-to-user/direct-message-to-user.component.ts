@@ -153,7 +153,7 @@ export class DirectMessageToUserComponent implements OnInit, OnChanges {
         this.closeSearchContainer = true;
       } else if (this.inviteUserOrChannel && this.inviteUserOrChannel.startsWith('#')) {
         const channelName = this.inviteUserOrChannel.substr(1).toLowerCase();
-        this.channelDataService.getChannelData().subscribe(
+        this.channelDataService.getChannelDataOld().subscribe(
           (channelData: ChannelDataInterface[]) => {
             this.searchResultsChannels = channelData
               .filter(channel => channel.channelName.toLowerCase().includes(channelName))
@@ -194,16 +194,16 @@ export class DirectMessageToUserComponent implements OnInit, OnChanges {
     }
   }
 
- /*  inviteChannel(channel: ChannelDataInterface):void {
-    if (channel) {
-      this.isInvitationValid = true;
-      this.inputSearchId = channel.id;
-      this.selectedUserNameOrChannelName = channel.channelName;
-      this.toggleChannelList = false;
-      this.closeSearchContainer = false;
-      this.inviteUserOrChannel = '';
-    }
-  } */
+  /*  inviteChannel(channel: ChannelDataInterface):void {
+     if (channel) {
+       this.isInvitationValid = true;
+       this.inputSearchId = channel.id;
+       this.selectedUserNameOrChannelName = channel.channelName;
+       this.toggleChannelList = false;
+       this.closeSearchContainer = false;
+       this.inviteUserOrChannel = '';
+     }
+   } */
 
   toggleChat() {
     this.toggleSearchBar = !this.toggleSearchBar;
@@ -281,20 +281,20 @@ export class DirectMessageToUserComponent implements OnInit, OnChanges {
     );
   }
 
-  reaction(messageEmoji:string, index:number) {
+  reaction(messageEmoji: string, index: number) {
     if (this.emojisClickedBefore === index) {
       this.hideEmojis(this.emojisClickedBefore);
       this.emojisClickedBefore = undefined;
     } else {
       if (this.emojisClickedBefore !== null) {
-       this.hideEmojis(this.emojisClickedBefore);
+        this.hideEmojis(this.emojisClickedBefore);
       }
       this.showEmojis(index);
       this.emojisClickedBefore = index;
     }
   }
 
-  showEmojis(emojiIndex:number) {
+  showEmojis(emojiIndex: number) {
     let button = document.getElementById(`reaction-button${emojiIndex}`)
     const emojiElement = document.getElementById(`reaction${emojiIndex}`);
     if (emojiElement) {
@@ -304,11 +304,11 @@ export class DirectMessageToUserComponent implements OnInit, OnChanges {
     button?.classList.add('d-none');
   }
 
-  
-  hideEmojis(emojiIndex:any) {
+
+  hideEmojis(emojiIndex: any) {
     let button = document.getElementById(`reaction-button${emojiIndex}`)
     const emojiElement = document.getElementById(`reaction${emojiIndex}`);
-    
+
     if (emojiElement) {
       emojiElement.classList.remove('showEmojis');
     }
@@ -370,7 +370,7 @@ export class DirectMessageToUserComponent implements OnInit, OnChanges {
     this.reactionListOpen = false;
   }
 
-  
+
   toggleEmojiPicker() {
     this.emojipickeractive = !this.emojipickeractive;
   }
