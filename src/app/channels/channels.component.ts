@@ -300,6 +300,7 @@ export class ChannelsComponent implements OnInit {
           this.userCard = false;
         } else {
           console.log('No matching user found.');
+          this.userForm.controls['userName'].setErrors({ userNotFound: true });
         }
       }
     }

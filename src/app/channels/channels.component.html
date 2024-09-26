@@ -40,7 +40,7 @@
                 <img [ngClass]="{'arrow-for-dropdown-open': openDirect}" class="arrow-for-dropdown-closed"
                     src="./assets/img/icons/arrow_drop_down.png" alt="#" (click)="toggleDirect()">
                 <img src="./assets/img/icons/account_circle.png" alt="#">
-                <h2 style="white-space: nowrap;" >Direct Message</h2>
+                <h2 style="white-space: nowrap;">Direct Message</h2>
             </div>
         </div>
         <div class="dropdown-container" *ngIf="openDirect">
@@ -64,7 +64,7 @@
 </mat-card>
 
 <mat-card class="overlay" *ngIf="channelCard">
-    <div  class="channel-edit-card">
+    <div class="channel-edit-card">
         <form (ngSubmit)="submitChannel()" [formGroup]="channelForm">
             <div class="channel-introduction">
                 <div class="channel-text">
@@ -80,10 +80,9 @@
             </div>
             <h3>Channel Name</h3>
             <div class="channel-inputs">
-                <input class="channel-name" type="text" placeholder="For example Angular"
-                    formControlName="channelName">
+                <input class="channel-name" type="text" placeholder="For example Angular" formControlName="channelName">
                 <div *ngIf="channelForm.controls['channelName'].invalid && channelForm.controls['channelName'].touched">
-                    <div class="error-massage" *ngIf="channelForm.controls['channelName'].errors?.['required']">Title is
+                    <div class="error-message" *ngIf="channelForm.controls['channelName'].errors?.['required']">Title is
                         required.
                     </div>
                 </div>
@@ -92,8 +91,9 @@
             <div class="channel-inputs">
                 <input class="channel-name" type="text" placeholder="Your channel description"
                     formControlName="channelDescription">
-                <div *ngIf="channelForm.controls['channelDescription'].invalid && channelForm.controls['channelDescription'].touched">
-                    <div class="error-massage" *ngIf="channelForm.controls['channelDescription'].errors?.['required']">
+                <div
+                    *ngIf="channelForm.controls['channelDescription'].invalid && channelForm.controls['channelDescription'].touched">
+                    <div class="error-message" *ngIf="channelForm.controls['channelDescription'].errors?.['required']">
                         Description is
                         required.
                     </div>
@@ -117,7 +117,8 @@
             <mat-radio-group>
                 <mat-radio-button *ngFor="let channel of availableChannels.slice(0, 1); let i = index" color="primary"
                     value="addFromGroup" (click)="addUser('addFromGroup')">
-                        Add all members of <span [matMenuTriggerFor]="channelMenu">{{ selectedChannel?.channel_name || channel.channel_name }}</span>
+                    Add all members of <span [matMenuTriggerFor]="channelMenu">{{ selectedChannel?.channel_name ||
+                        channel.channel_name }}</span>
                     <mat-menu #channelMenu="matMenu">
                         <button mat-menu-item *ngFor="let channel of availableChannels"
                             (click)="selectChannelFromList(channel.channel_id)">{{ channel.channel_name }}</button>
@@ -130,14 +131,17 @@
         </div>
         <form [formGroup]="userForm" *ngIf="openUserForm">
             <div class="users-inputs">
-                <input class="user-name" type="text" placeholder="Please provide a friends name" formControlName="userName">
+                <input class="user-name" type="text" placeholder="Please provide a friend's name"
+                    formControlName="userName">
                 <div *ngIf="userForm.controls['userName'].invalid && userForm.controls['userName'].touched">
-                    <div class="error-massage" *ngIf="userForm.controls['userName'].errors?.['required']">Name is
+                    <div class="error-message" *ngIf="userForm.controls['userName'].errors?.['required']">Name is
                         required.
+                    </div>
+                    <div class="error-message" *ngIf="userForm.controls['userName'].errors?.['userNotFound']">
+                        <mat-error>User cannot be found.</mat-error>
                     </div>
                 </div>
             </div>
-            
         </form>
         <div class="btn-area">
             <button class="btn-channel" (click)="submitFormOptions()">Create</button>
