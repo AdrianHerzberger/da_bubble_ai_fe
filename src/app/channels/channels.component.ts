@@ -10,7 +10,8 @@ import { DirectMessageToUserService } from '../service-moduls/direct-message-to-
 import { DirectMessageInterface } from '../service-moduls/direct-message.service';
 import { BreakpointObserver } from '@angular/cdk/layout';
 import { ActivatedRoute } from '@angular/router';
-import { GetAllChannelsRespsonse, GetChannelAssociatedUserResponse } from 'output/models/types';
+import { GetAllChannelsRespsonse, GetChannelAssociatedUserResponse, GetUserAssociatedChannelResponse } from 'output/models/types';
+import { Observable } from 'rxjs';
 
 
 @Component({
@@ -48,6 +49,7 @@ export class ChannelsComponent implements OnInit {
   selectedChannel: GetAllChannelsRespsonse | null = null;
   availableChannels: GetAllChannelsRespsonse[] = [];
   channelsAssociatedUser: GetChannelAssociatedUserResponse[] = [];
+  userAssociatedList: GetUserAssociatedChannelResponse[] = [];
 
   selectedUserType: string = '';
   createByUser: string = '';
@@ -77,23 +79,14 @@ export class ChannelsComponent implements OnInit {
       }
     });
 
-    this.route.parent?.params.subscribe(params => {
-      this.userId = +params['userId'];
-      console.log('Received user ID from parent route:', this.userId);
-    });
-
-    if (this.userId) {
-      this.getChannelAssociatedUser(this.userId);
-    } else {
-      console.error('User ID not available in route params');
-    }
+    this.getRouterParamsUserId()    
     this.getChannelData();
   }
 
   channelForm = new FormGroup({
     channelName: new FormControl('', [
       Validators.required,
-      Validators.minLength(10),
+      Validators.minLength(5),
       Validators.maxLength(25),
     ]),
     channelDescription: new FormControl('', [
@@ -107,7 +100,20 @@ export class ChannelsComponent implements OnInit {
     ])
   });
 
-  getChannelAssociatedUser(userId: number) {
+  getRouterParamsUserId() {
+    this.route.parent?.params.subscribe(params => {
+      this.userId = +params['userId'];
+      console.log('Received user ID from parent route:', this.userId);
+    });
+
+    if (this.userId) {
+      return this.getChannelAssociatedUserData(this.userId);
+    } else {
+      return false
+    }
+  }
+
+  getChannelAssociatedUserData(userId: number) {
     this.channelDataService.getChannelAssociatedUser(userId).subscribe({
       next: (channelsAssociatedUser: GetChannelAssociatedUserResponse[]) => {
         this.channelsAssociatedUser = channelsAssociatedUser;
@@ -125,6 +131,11 @@ export class ChannelsComponent implements OnInit {
     return this.selectedChannel
   }
 
+  getUserAssociatedChannelData(channelId: number): Observable<GetUserAssociatedChannelResponse[]> {
+    console.log("Channel id received:", channelId);
+    return this.channelDataService.getUserAssociatedChannels(channelId);
+  }
+  
   getChannelData() {
     this.channelDataService.getChannelData().subscribe({
       next: (availableChannels: GetAllChannelsRespsonse[]) => {
@@ -286,6 +297,7 @@ export class ChannelsComponent implements OnInit {
         if (matchedUser) {
           console.log(matchedUser.user_id)
           this.channelDataService.addUserAssociationToChannel(matchedUser.user_id, currentChannel);
+          this.userCard = false;
         } else {
           console.log('No matching user found.');
         }
@@ -294,9 +306,20 @@ export class ChannelsComponent implements OnInit {
     else if (this.selectedUserType === 'addFromGroup') {
       if (this.selectedChannel) {
         const selectedChannelId = this.selectedChannel.channel_id;
-        console.log('Selected channel:', this.selectedChannel.channel_name);
-
-
+        this.getUserAssociatedChannelData(selectedChannelId).subscribe({
+          next: (userList: GetUserAssociatedChannelResponse[]) => {
+            const userIds = userList.map(user => user.user_id);
+            console.log('User IDs:', userIds);
+            this.channelDataService.addUserAssociationToChannel(userIds, currentChannel);
+          },
+          error: (error: any) => {
+            console.error('Error retrieving user list:', error);
+          }
+        });
+        this.userCard = false;
+      }
+      else {
+        console.log('No matching user found.');
       }
     }
   }

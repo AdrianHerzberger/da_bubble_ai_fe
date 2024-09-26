@@ -13,7 +13,9 @@ import {
   CreateChannelUserAssociationBody, CreateChannelUserAssociationResponse,
   GetAllChannelsArgs, GetAllChannelsRespsonse,
   GetChannelAssociatedUserArgs,
-  GetChannelAssociatedUserResponse
+  GetChannelAssociatedUserResponse,
+  GetUserAssociatedChannelArgs,
+  GetUserAssociatedChannelResponse
 } from './models/types';
 
 
@@ -50,6 +52,11 @@ export interface APIClientInterface {
   getApiChannelAssociatedUser(args: GetChannelAssociatedUserArgs): Observable<GetChannelAssociatedUserResponse[]>
 
   /**
+   * Response generated for [ 200 ] HTTP response code.
+   */
+  getApiUserAssociatedChannel(args: GetUserAssociatedChannelArgs): Observable<GetUserAssociatedChannelResponse[]>
+
+  /**
    * Response generated for [ 201 ] HTTP response code.
    */
   postApiRegisterUser(body: RegisterUserBody): Observable<RegisterUserResponse>;
@@ -67,6 +74,6 @@ export interface APIClientInterface {
    /**
    * Response generated for [ 201 ] HTTP response code.
    */
-  postApiChannelUserAssociation(body: CreateChannelUserAssociationBody): Observable<CreateChannelUserAssociationResponse>;
+  postApiChannelUserAssociation(body: CreateChannelUserAssociationBody): Observable<CreateChannelUserAssociationResponse[]>;
 
 }

@@ -78,7 +78,7 @@
                     <img src="./assets/img/icons/close.png" alt="#" (click)="close()">
                 </div>
             </div>
-            <h3>Channel-Name</h3>
+            <h3>Channel Name</h3>
             <div class="channel-inputs">
                 <input class="channel-name" type="text" placeholder="For example Angular"
                     formControlName="channelName">
@@ -117,7 +117,7 @@
             <mat-radio-group>
                 <mat-radio-button *ngFor="let channel of availableChannels.slice(0, 1); let i = index" color="primary"
                     value="addFromGroup" (click)="addUser('addFromGroup')">
-                    Add all members of <span [matMenuTriggerFor]="channelMenu">{{ selectedChannel?.channel_name || channel.channel_name }}</span>
+                        Add all members of <span [matMenuTriggerFor]="channelMenu">{{ selectedChannel?.channel_name || channel.channel_name }}</span>
                     <mat-menu #channelMenu="matMenu">
                         <button mat-menu-item *ngFor="let channel of availableChannels"
                             (click)="selectChannelFromList(channel.channel_id)">{{ channel.channel_name }}</button>

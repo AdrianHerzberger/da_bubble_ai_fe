@@ -171,6 +171,43 @@
         }
       }
     },
+    "/api/user_associated_channel/{channel_id}": {
+      "get": {
+        "summary": "Get all users associated with channel",
+        "parameters": [
+          {
+            "name": "channel_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer"
+            }
+          }
+        ],
+        "description": "Retrieve a list of all users associated with this channel",
+        "responses": {
+          "200": {
+            "description": "List of users retrieved successfully",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "type": "object",
+                    "properties": {
+                      "user_id": { "type": "integer" },
+                      "user_name": { "type": "string" }
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "404": { "description": "Users associated with this channel not found" },
+          "500": { "description": "Failed to get all users associated with this channel" }
+        }
+      }
+    },
     "/api/get_channel_by_id/{channel_id}": {
       "get": {
         "summary": "Get channel by ID",
@@ -355,7 +392,12 @@
               "schema": {
                 "type": "object",
                 "properties": {
-                  "user_id": { "type": "number" },
+                  "user_id": { 
+                    "type": "array", 
+                    "items": {              
+                      "type": "number"
+                    } 
+                  },
                   "channel_id": {"type": "number"}
                 },
                 "required": [
@@ -374,8 +416,13 @@
                 "schema": {
                   "type": "object",
                   "properties": {
-                    "user_id": { "type": "number" },
-                    "channel_id": { "type": "number" }
+                    "user_id": {             
+                      "type": "array",
+                      "items": {
+                        "type": "number"
+                      }
+                    },
+                   "channel_id": {"type": "number"}
                   }
                 }
               }

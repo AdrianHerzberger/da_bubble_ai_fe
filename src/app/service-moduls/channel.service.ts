@@ -4,7 +4,7 @@ import { APIClient } from 'output';
 import { BehaviorSubject, Observable, catchError, from, map, of, tap } from 'rxjs';
 import { UserDataService } from './user.service';
 import { HttpHeaders } from '@angular/common/http';
-import { GetAllChannelsRespsonse, GetChannelAssociatedUserResponse, GetChannelByIdResponse } from 'output/models/types';
+import { CreateChannelUserAssociationBody, GetAllChannelsRespsonse, GetChannelAssociatedUserResponse, GetChannelByIdResponse, GetUserAssociatedChannelResponse } from 'output/models/types';
 import { Router } from '@angular/router';
 
 export interface ChannelDataInterface {
@@ -26,8 +26,6 @@ export class ChannelDataService {
   public channelData$ = this.channelDataSubject.asObservable();
 
   channelData: ChannelDataInterface[] = [];
-
-  private channelDataResovler: GetAllChannelsRespsonse[] = []
 
   constructor(
     public firestore: Firestore,
@@ -87,8 +85,6 @@ export class ChannelDataService {
   }
 
   createChannelData(channelName: string, channelDescription: string, channelColor: string, userId: number | null): void {
-    const token = this.userDataService.getAccessToken();
-    console.log("Valid access token from sign-in:", token)
     const requestBody = {
       channel_name: channelName,
       channel_description: channelDescription,
@@ -96,15 +92,10 @@ export class ChannelDataService {
       user_id: userId
     };
 
-    const headers = new HttpHeaders({
-      Authorization: `Bearer ${token}`
-    });
-
-    this.apiClient.postApiCreateChannel(requestBody, { headers }).subscribe({
+    this.apiClient.postApiCreateChannel(requestBody).subscribe({
       next: (response) => {
-        const channelId = response.channel_id
+        const channelId = response.channel_id;
         if (channelId) {
-          this.router.navigateByUrl(`/board/${userId}/channel/${channelId}`);
           this.getCurrentChannelById(channelId);
         }
       },
@@ -114,18 +105,24 @@ export class ChannelDataService {
     });
   }
 
-  addUserAssociationToChannel(userId: number, channelId: number | null) {
-    this.apiClient.postApiChannelUserAssociation({
-      user_id: userId,
+  addUserAssociationToChannel(userId: number | number[], channelId: number | null) {
+    const userIdArray = Array.isArray(userId) ? userId : [userId]
+
+    const body: CreateChannelUserAssociationBody = {
+      user_id: userIdArray, 
       channel_id: channelId,
-    }).subscribe({
+    };
+
+    console.log("The result of the request body:", body)
+  
+    this.apiClient.postApiChannelUserAssociation(body).subscribe({
       next: (response) => {
-        console.log('Channel user association created successfully:', response)
+        console.log('Channel user associations created successfully:', response, body);
       },
       error: (error) => {
-        console.log('Error creating channel user association.', error)
+        console.log('Error creating channel user associations.', error);
       }
-    })
+    });
   }
 
   getChannelData(): Observable<GetAllChannelsRespsonse[]> {
@@ -133,8 +130,7 @@ export class ChannelDataService {
       tap((response: GetAllChannelsRespsonse[]) => {
         console.log('Get all channel data successfully:', response);
       }),
-      catchError((error) => {
-        console.error('Error getting channel data:', error);
+      catchError(() => {
         return of([]);
       })
     );
@@ -144,11 +140,22 @@ export class ChannelDataService {
     console.log('Id passed from route to channel association:', userId)
     return this.apiClient.getApiChannelAssociatedUser({ user_id: userId }).pipe(
       tap((response: GetChannelAssociatedUserResponse[]) => {
-        console.log('Channel data with associated user successfully:', response);
+        console.log('Channel data with associated user received successfully:', response);
+      }),
+      catchError(() => {
+        return of([]);
+      })
+    );
+  }
+
+  getUserAssociatedChannels(channelId: number | null): Observable<GetUserAssociatedChannelResponse[]> {
+    return this.apiClient.getApiUserAssociatedChannel({channel_id: channelId}).pipe(
+      tap((response: GetUserAssociatedChannelResponse[]) => {
+        console.log('User data with associated channel received successfully:', response);
       }),
       catchError((error) => {
-        console.error('Error getting channel data with associated user:', error);
-        return of([]);
+        console.error('Error getting user data with associated channel:', error);
+        return of([])
       })
     );
   }

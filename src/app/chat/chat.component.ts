@@ -174,7 +174,7 @@ export class ChatComponent implements OnInit, OnChanges, AfterViewChecked {
     this.threadDataService.getThreadDataMessages().subscribe(
       (threadData: ThreadDataInterface[]) => {
         this.threadData = threadData;
-        console.log("Get thread data", threadData);
+        //console.log("Get thread data", threadData);
       },
       (error) => {
         console.error('Error fetching thread data:', error);

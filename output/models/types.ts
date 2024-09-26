@@ -87,7 +87,7 @@ export interface GetChannelByIdResponse {
 }
 
 export interface CreateChannelUserAssociationBody {
-    user_id: number;
+    user_id: number | number[];
     channel_id: number | null;
 }
 
@@ -119,5 +119,14 @@ export interface GetChannelAssociatedUserResponse {
     channel_name: string;
     channel_description: string;
     channel_color: string;
+}
+
+export interface GetUserAssociatedChannelArgs {
+    channel_id: number | null;
+}
+
+export interface GetUserAssociatedChannelResponse {
+    user_id: number;
+    user_name: string;
 }
 

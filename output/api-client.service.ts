@@ -24,7 +24,9 @@ import {
   GetAllChannelsArgs,
   GetAllChannelsRespsonse,
   GetChannelAssociatedUserArgs,
-  GetChannelAssociatedUserResponse
+  GetChannelAssociatedUserResponse,
+  GetUserAssociatedChannelResponse,
+  GetUserAssociatedChannelArgs
 } from './models/types';
 
 
@@ -129,6 +131,17 @@ export class APIClient implements APIClientInterface {
     }
     return this.sendRequest<GetChannelAssociatedUserResponse[]>('GET', path, options)
   }
+
+  /**
+   * Response generated for [ 200 ] HTTP response code.
+   */
+  getApiUserAssociatedChannel(args: GetUserAssociatedChannelArgs): Observable<GetUserAssociatedChannelResponse[]> {
+    const path = `/api/user_associated_channel/${args.channel_id}`;
+    const options: APIHttpOptions = {
+      ...this.options
+    }
+    return this.sendRequest<GetUserAssociatedChannelResponse[]>('GET', path, options)
+  }
   
   /**
    * Response generated for [ 201 ] HTTP response code.
@@ -170,13 +183,13 @@ export class APIClient implements APIClientInterface {
   /**
    * Response generated for [ 201 ] HTTP response code.
    */
-  postApiChannelUserAssociation(body: CreateChannelUserAssociationBody): Observable<CreateChannelUserAssociationResponse> {
+  postApiChannelUserAssociation(body: CreateChannelUserAssociationBody): Observable<CreateChannelUserAssociationResponse[]> {
     const path = `/api/create_user_association_to_channel`;
     const options: APIHttpOptions = {
       ...this.options,
     };
 
-    return this.sendRequest<CreateChannelUserAssociationResponse>('POST', path, options, body);
+    return this.sendRequest<CreateChannelUserAssociationResponse[]>('POST', path, options, body);
   }
 
   private sendRequest<T>(method: string, path: string, options: HttpOptions, body?: any): Observable<T> {
