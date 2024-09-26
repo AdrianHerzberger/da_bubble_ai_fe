@@ -23,7 +23,7 @@ import { MatProgressBarModule } from '@angular/material/progress-bar';
 import { MatRadioModule } from '@angular/material/radio';
 import { MatMenuModule } from '@angular/material/menu';
 import { MatSelectModule } from '@angular/material/select';
-import { HttpClientModule } from '@angular/common/http';
+import { HTTP_INTERCEPTORS, HttpClientModule } from '@angular/common/http';
 import { APIClientModule } from 'output';
 
 //<-----Components----->//
@@ -43,6 +43,7 @@ import { EmojisComponent } from './emojis/emojis.component';
 import { ImprintComponent } from './imprint/imprint.component';
 import { LegalComponent } from './legal/legal.component';
 import { DirectMessageToUserComponent } from './direct-message-to-user/direct-message-to-user.component';
+import { AuthInterceptorService } from './service-moduls/auth-interceptor.service';
 
 
 @NgModule({
@@ -99,6 +100,7 @@ import { DirectMessageToUserComponent } from './direct-message-to-user/direct-me
     
   ],
   providers: [
+    { provide: HTTP_INTERCEPTORS, useClass: AuthInterceptorService, multi: true }
   ],
   bootstrap: [AppComponent],
 })

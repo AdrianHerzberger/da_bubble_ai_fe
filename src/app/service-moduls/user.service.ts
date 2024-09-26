@@ -76,7 +76,7 @@ export class UserDataService {
         const userId = response.user_id;
         console.log("Received user mail from body:", userId)
         if (userId) {
-          this.router.navigateByUrl(`/board/${userId}/channel`);
+          this.router.navigateByUrl(`/board/${userId}/channels`);
           this.getCurrentUserById(userId);
         } else {
           console.error('User ID not found in response.');
@@ -152,7 +152,7 @@ export class UserDataService {
         }
       }
     } catch (error) {
-      console.log('ERROR retrieving user data:', error);
+      //console.log('ERROR retrieving user data:', error);
     }
   }
 

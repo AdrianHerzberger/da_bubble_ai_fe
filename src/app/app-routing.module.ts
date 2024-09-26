@@ -20,8 +20,7 @@ const routes: Routes = [
   { path: 'auth-action', component: AuthActionComponent },
   {
     path: 'board/:userId', component: BoardComponent, children: [
-      { path: 'channel', component: ChannelsComponent },
-      { path: 'channel/:channelId', component: ChannelsComponent },
+      { path: 'channels', component: ChannelsComponent },
     ]
   },
   { path: 'imprint', component: ImprintComponent },
