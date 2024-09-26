@@ -110,4 +110,14 @@ export interface GetAllChannelsRespsonse {
     channel_color: string;
 }
 
+export interface GetChannelAssociatedUserArgs {
+    user_id: number | null;
+}
+
+export interface GetChannelAssociatedUserResponse {
+    channel_id: number;
+    channel_name: string;
+    channel_description: string;
+    channel_color: string;
+}
 

@@ -1,10 +1,10 @@
 import { Injectable } from '@angular/core';
 import { DocumentData, Firestore, QuerySnapshot, addDoc, collection, deleteDoc, doc, getDocs, onSnapshot, query, setDoc, updateDoc } from '@angular/fire/firestore';
 import { APIClient } from 'output';
-import { BehaviorSubject, Observable, from, map } from 'rxjs';
+import { BehaviorSubject, Observable, catchError, from, map, of, tap } from 'rxjs';
 import { UserDataService } from './user.service';
 import { HttpHeaders } from '@angular/common/http';
-import { GetAllChannelsRespsonse, GetChannelByIdResponse } from 'output/models/types';
+import { GetAllChannelsRespsonse, GetChannelAssociatedUserResponse, GetChannelByIdResponse } from 'output/models/types';
 import { Router } from '@angular/router';
 
 export interface ChannelDataInterface {
@@ -128,17 +128,29 @@ export class ChannelDataService {
     })
   }
 
-  getChannelData() : GetAllChannelsRespsonse[] {
-    this.apiClient.getApiAllChannels().subscribe({
-      next: (response) => {
-        this.channelDataResovler = response;
+  getChannelData(): Observable<GetAllChannelsRespsonse[]> {
+    return this.apiClient.getApiAllChannels().pipe(
+      tap((response: GetAllChannelsRespsonse[]) => {
         console.log('Get all channel data successfully:', response);
-      },
-      error: (error) => {
-        console.error('Error retrieving all channel data:', error);
-      }
-    });
-    return this.channelDataResovler;
+      }),
+      catchError((error) => {
+        console.error('Error getting channel data:', error);
+        return of([]);
+      })
+    );
+  }
+
+  getChannelAssociatedUser(userId: number | null): Observable<GetChannelAssociatedUserResponse[]> {
+    console.log('Id passed from route to channel association:', userId)
+    return this.apiClient.getApiChannelAssociatedUser({ user_id: userId }).pipe(
+      tap((response: GetChannelAssociatedUserResponse[]) => {
+        console.log('Channel data with associated user successfully:', response);
+      }),
+      catchError((error) => {
+        console.error('Error getting channel data with associated user:', error);
+        return of([]);
+      })
+    );
   }
 
   sendChannelData(channel: ChannelDataInterface): Observable<void> {

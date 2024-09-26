@@ -22,7 +22,9 @@ import {
   CreateChannelUserAssociationBody,
   CreateChannelUserAssociationResponse,
   GetAllChannelsArgs,
-  GetAllChannelsRespsonse
+  GetAllChannelsRespsonse,
+  GetChannelAssociatedUserArgs,
+  GetChannelAssociatedUserResponse
 } from './models/types';
 
 
@@ -115,6 +117,17 @@ export class APIClient implements APIClientInterface {
       ...this.options
     }
     return this.sendRequest<GetAllChannelsRespsonse[]>('GET', path, options)
+  }
+
+  /**
+   * Response generated for [ 200 ] HTTP response code.
+   */
+  getApiChannelAssociatedUser(args: GetChannelAssociatedUserArgs): Observable<GetChannelAssociatedUserResponse[]> {
+    const path = `/api/channel_associated_user/${args.user_id}`;
+    const options: APIHttpOptions = {
+      ...this.options
+    }
+    return this.sendRequest<GetChannelAssociatedUserResponse[]>('GET', path, options)
   }
   
   /**

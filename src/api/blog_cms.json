@@ -132,6 +132,45 @@
         }
       }
     },
+    "/api/channel_associated_user/{user_id}": {
+      "get": {
+        "summary": "Get all channels associated with user",
+        "parameters": [
+          {
+            "name": "user_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer"
+            }
+          }
+        ],
+        "description": "Retrieve a list of all channels associated with this user",
+        "responses": {
+          "200": {
+            "description": "List of channels retrieved successfully",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "type": "object",
+                    "properties": {
+                      "channel_id": { "type": "integer" },
+                      "channel_name": { "type": "string" },
+                      "channel_description": { "type": "string" },
+                      "channel_color": { "type": "string" }
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "404": { "description": "Channels associated with this user not found" },
+          "500": { "description": "Failed to get all channels associated with this user" }
+        }
+      }
+    },
     "/api/get_channel_by_id/{channel_id}": {
       "get": {
         "summary": "Get channel by ID",

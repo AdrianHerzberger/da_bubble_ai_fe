@@ -10,7 +10,7 @@
         <div class="channel-header">
             <div class="channel-info" *ngIf="(selectedChannel) as channel">
                 <div class="shape"><img src="./assets/img/icons/channel-sample-icon.png" alt="#"></div>
-                <h2>{{ channel.channelName }}</h2>
+                <h2>{{ channel.channel_name }}</h2>
             </div>
             <img class="edit-icon" src="./assets/img/icons/edit_square.png" alt="#" (click)="triggerDirectChat()">
         </div>
@@ -26,7 +26,7 @@
             </div>
         </div>
         <div class="dropdown-container" *ngIf="openChannels">
-            <div class="channel-box" *ngFor="let channel of availableChannels; let i = index"
+            <div class="channel-box" *ngFor="let channel of channelsAssociatedUser; let i = index"
                 [style.background]="channel.channel_color" (click)="selectChannel(channel.channel_id)">
                 <h3># {{ channel.channel_name }}</h3>
             </div>
@@ -94,7 +94,7 @@
                     formControlName="channelDescription">
                 <div *ngIf="channelForm.controls['channelDescription'].invalid && channelForm.controls['channelDescription'].touched">
                     <div class="error-massage" *ngIf="channelForm.controls['channelDescription'].errors?.['required']">
-                        Title is
+                        Description is
                         required.
                     </div>
                 </div>
@@ -115,12 +115,12 @@
         </div>
         <div class="radio-selection">
             <mat-radio-group>
-                <mat-radio-button *ngFor="let channel of channelData.slice(0, 1); let i = index" color="primary"
+                <mat-radio-button *ngFor="let channel of availableChannels.slice(0, 1); let i = index" color="primary"
                     value="addFromGroup" (click)="addUser('addFromGroup')">
-                    All members of <span [matMenuTriggerFor]="channelMenu">{{ selectedChannel?.channelName }}</span>
+                    Add all members of <span [matMenuTriggerFor]="channelMenu">{{ selectedChannel?.channel_name || channel.channel_name }}</span>
                     <mat-menu #channelMenu="matMenu">
-                        <button mat-menu-item *ngFor="let channel of channelData.slice(0, -1)"
-                            (click)="selectChannelFromList(channel.id)">{{ channel.channelName }}</button>
+                        <button mat-menu-item *ngFor="let channel of availableChannels"
+                            (click)="selectChannelFromList(channel.channel_id)">{{ channel.channel_name }}</button>
                     </mat-menu>
                 </mat-radio-button>
                 <mat-radio-button color="primary" value="addByUser" (click)="addUser('addByUser')">
@@ -128,18 +128,19 @@
                 </mat-radio-button>
             </mat-radio-group>
         </div>
-        <form [formGroup]="userForm" (ngSubmit)="submitUser()" *ngIf="openUserForm">
+        <form [formGroup]="userForm" *ngIf="openUserForm">
             <div class="users-inputs">
-                <input class="user-name" type="text" placeholder="Name eingeben" formControlName="userName">
+                <input class="user-name" type="text" placeholder="Please provide a friends name" formControlName="userName">
                 <div *ngIf="userForm.controls['userName'].invalid && userForm.controls['userName'].touched">
                     <div class="error-massage" *ngIf="userForm.controls['userName'].errors?.['required']">Name is
                         required.
                     </div>
                 </div>
             </div>
-            <div class="btn-area">
-                <button class="btn-channel" type="submit">Create</button>
-            </div>
+            
         </form>
+        <div class="btn-area">
+            <button class="btn-channel" (click)="submitFormOptions()">Create</button>
+        </div>
     </div>
 </mat-card>
