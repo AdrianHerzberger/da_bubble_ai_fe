@@ -10,10 +10,14 @@
         <div [ngClass]="{'hidden-channel': chatBehavior.hideChannel}" class="grid-view-channels">
             <router-outlet name="channels"></router-outlet>  
         </div>
-        <div [ngClass]="{'hidden-chat': chatBehavior.hideChat}" *ngIf="(this.chatBehavior.ChannelChatIsOpen && !this.chatBehavior.isResponsive) || (this.chatBehavior.isChatOpenResponsive && this.chatBehavior.isResponsive)">
+        <div [ngClass]="{'hidden-chat': chatBehavior.hideChat}" class="grid-view-chat"
+            *ngIf="(this.chatBehavior.ChannelChatIsOpen && !this.chatBehavior.isResponsive) 
+                || (this.chatBehavior.isChatOpenResponsive && this.chatBehavior.isResponsive)">
             <router-outlet name="chat"></router-outlet> 
         </div>
-        <div *ngIf="(this.threadDataService.threadOpen && !this.chatBehavior.isResponsive) || (this.chatBehavior.isThreadOpenResponsive && this.chatBehavior.isResponsive)">
+        <div class="grid-view-thread"
+            *ngIf="(this.threadDataService.threadOpen && !this.chatBehavior.isResponsive) 
+                || (this.chatBehavior.isThreadOpenResponsive && this.chatBehavior.isResponsive)">
             <router-outlet name="thread"></router-outlet>
         </div>
     </div>
