@@ -29,9 +29,7 @@ export class ChannelDataService {
 
   constructor(
     public firestore: Firestore,
-    private router: Router,
     private apiClient: APIClient,
-    private userDataService: UserDataService,
   ) { }
 
   getChannelDataOld(): Observable<ChannelDataInterface[]> {

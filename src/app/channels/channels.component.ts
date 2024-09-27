@@ -10,7 +10,7 @@ import { DirectMessageToUserService } from '../service-moduls/direct-message-to-
 import { DirectMessageInterface } from '../service-moduls/direct-message.service';
 import { BreakpointObserver } from '@angular/cdk/layout';
 import { ActivatedRoute } from '@angular/router';
-import { GetAllChannelsRespsonse, GetChannelAssociatedUserResponse, GetUserAssociatedChannelResponse } from 'output/models/types';
+import { GetAllChannelsRespsonse, GetAllUsersResponse, GetChannelAssociatedUserResponse, GetUserAssociatedChannelResponse } from 'output/models/types';
 import { Observable } from 'rxjs';
 
 
@@ -42,22 +42,22 @@ export class ChannelsComponent implements OnInit {
 
   toggleChannelCard: boolean = true;
 
-  userData: UserDataInterface[] = [];
   directChatData: UserDataInterface[] = [];
   channelData: ChannelDataInterface[] = [];
 
   selectedChannel: GetAllChannelsRespsonse | null = null;
   availableChannels: GetAllChannelsRespsonse[] = [];
   channelsAssociatedUser: GetChannelAssociatedUserResponse[] = [];
-  userAssociatedList: GetUserAssociatedChannelResponse[] = [];
+
+  availableUsers: GetAllUsersResponse[] = [];
+
 
   selectedUserType: string = '';
   createByUser: string = '';
-  selectedUser: UserDataInterface | null = null;
+  selectedUser: GetAllUsersResponse | null = null;
   selectedDirectChat: DirectMessageInterface | null = null;
 
   userId!: number | null;
-  channelId!: number | null;
 
   constructor(
     private userDataService: UserDataService,
@@ -79,8 +79,9 @@ export class ChannelsComponent implements OnInit {
       }
     });
 
-    this.getRouterParamsUserId()    
+    this.getRouterParamsUserId()
     this.getChannelData();
+    this.getUserData();
   }
 
   channelForm = new FormGroup({
@@ -134,6 +135,25 @@ export class ChannelsComponent implements OnInit {
   getUserAssociatedChannelData(channelId: number): Observable<GetUserAssociatedChannelResponse[]> {
     console.log("Channel id received:", channelId);
     return this.channelDataService.getUserAssociatedChannels(channelId);
+  }
+
+  getUserData() {
+    this.userDataService.getUserData().subscribe({
+      next: (availableUsers: GetAllUsersResponse[]) => {
+        this.availableUsers = availableUsers;
+        const currentUserId = this.userId
+
+        const currentUserIndex = this.availableUsers.findIndex(user => user.user_id === currentUserId)
+        if (currentUserIndex) {
+          this.availableUsers.splice(currentUserIndex, 1)
+        }
+
+      },
+      error: (error: any) => {
+        console.log('Error fetching user data', error)
+      }
+    });
+    return this.availableUsers;
   }
   
   getChannelData() {
@@ -198,14 +218,15 @@ export class ChannelsComponent implements OnInit {
     }
   }
 
-  openDirectMessageToUser(userId: any) {
+  openDirectMessageToUser(userId: number) {
     this.directMessageToUserService.setDirectMessageToUserId();
     this.chatBehavior.ChannelChatIsOpen = false;
 
     this.selectedUser = this.getUserById(userId);
+    console.log("selected user is:", this.selectedUser)
     this.userDataResolver.sendDataUsers(this.selectedUser);
 
-    this.chatBehavior.isChatOpenResponsive = false;
+    //this.chatBehavior.isChatOpenResponsive = false;
     this.chatBehavior.isThreadOpenResponsive = false;
     this.chatBehavior.isDirectChatToUserOpenResponsive = true;
 
@@ -239,7 +260,7 @@ export class ChannelsComponent implements OnInit {
   }
 
   getUserById(userId: any) {
-    return this.userData.find(user => user.id === userId) || null;
+    return this.availableUsers.find(user => user.user_id === userId) || null;
   }
 
   getDirectChatById(directChatId: any) {
@@ -283,7 +304,7 @@ export class ChannelsComponent implements OnInit {
     if (this.selectedUserType === 'addByUser') {
       if (this.userForm.valid) {
         const userName = this.userForm.value.userName?.toLowerCase();
-        const userData = this.userDataService.getUserData();
+        const userData = this.getUserData();
         console.log('users found:', userData);
 
         if (!userData || userData.length === 0) {

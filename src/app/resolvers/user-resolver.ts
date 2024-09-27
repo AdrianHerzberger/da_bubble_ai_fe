@@ -10,7 +10,6 @@ export const userResolve: ResolveFn<GetUserByIdResponse> = (
     state: RouterStateSnapshot
 ) => {
     const userId = Number(route.paramMap.get('userId'));
-    console.log("User ID passed from email login:", userId);
 
     if (isNaN(userId) || userId <= 0) {
         console.error("Invalid userId provided");

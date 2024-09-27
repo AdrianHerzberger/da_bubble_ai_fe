@@ -94,17 +94,16 @@ export class UserDataService {
     });
   }
 
-  getUserData(): GetAllUsersResponse[] {
-    this.apiClient.getApiAllUsers().subscribe({
-      next: (response) => {
+  getUserData(): Observable<GetAllUsersResponse[]> {
+    return this.apiClient.getApiAllUsers().pipe(
+      tap ((response: GetAllUsersResponse[]) => {
         this.userDataResolved = response;
         console.log('Get all user data successfully:', response);
-      },
-      error: (error) => {
-        console.error('Error retrieving all user data:', error);
-      }
-    });
-    return this.userDataResolved;
+      }),
+      catchError(() => {
+        return of([]);
+      })
+    );
   }
 
   getUserDataQueryOld(): Observable<UserDataInterface[]> {

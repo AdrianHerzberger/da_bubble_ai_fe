@@ -96,7 +96,7 @@ export class DirectMessageToUserComponent implements OnInit, OnChanges {
     this.getCurrentUserId();
     this.getUserData();
     this.compareIds();
-    this.getDataFromChannel();
+    //this.getDataFromChannel();
 
     /*setTimeout(() => {
       console.log('messageData', this.messageData);
@@ -123,7 +123,7 @@ export class DirectMessageToUserComponent implements OnInit, OnChanges {
     );
   }
 
-  async getDataFromChannel(): Promise<void> {
+ /*  async getDataFromChannel(): Promise<void> {
     this.receivedUserData$ = this.userDataResolver.resolve().pipe(
       map((userData: UserDataInterface | null) => {
         if (userData && userData.id) {
@@ -140,7 +140,7 @@ export class DirectMessageToUserComponent implements OnInit, OnChanges {
       }
     );
   }
-
+ */
   filterUsers(): void {
     if (this.inviteUserOrChannel) {
       const searchBy = this.inviteUserOrChannel.toLowerCase();

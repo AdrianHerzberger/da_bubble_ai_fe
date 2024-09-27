@@ -3,8 +3,8 @@ import { AfterViewChecked, Component, ElementRef, OnChanges, OnInit, Renderer2, 
 import { MessageDataService, MessageDataInterface } from '../service-moduls/message.service';
 import { ChannelDataResolverService } from '../service-moduls/channel-data-resolver.service';
 import { ChatBehaviorService } from '../service-moduls/chat-behavior.service';
-import { Observable, Subscription } from 'rxjs';
-import { map, switchMap } from 'rxjs/operators';
+import { Observable, of, Subscription } from 'rxjs';
+import { catchError, map, switchMap } from 'rxjs/operators';
 import { FormBuilder, FormControl, FormGroup, Validators } from '@angular/forms';
 import { UserDataService, UserDataInterface } from '../service-moduls/user.service';
 import { UserDataResolveService } from '../service-moduls/user-data-resolve.service';
@@ -15,6 +15,8 @@ import { EmojiService } from '../service-moduls/emoji.service';
 import { DirectMessageToUserService } from '../service-moduls/direct-message-to-user.service';
 import { MentionService } from '../service-moduls/mention.service';
 import { MatMenuTrigger } from '@angular/material/menu';
+import { GetAllUsersResponse } from 'output/models/types';
+import { APIClient } from 'output';
 
 @Component({
   selector: 'app-chat',
@@ -34,17 +36,18 @@ export class ChatComponent implements OnInit, OnChanges, AfterViewChecked {
   channelDescription!: FormGroup;
   receivedChannelData$!: Observable<ChannelDataInterface | null>;
 
-  userData: UserDataInterface[] = [];
   messageData: MessageDataInterface[] = [];
   channelData: ChannelDataInterface[] = [];
   threadData: ThreadDataInterface[] = [];
   availableChannels: ChannelDataInterface[] = [];
-  userProfile: UserDataInterface[] = [];
+
   isInvitationValid: boolean = false;
   mentionUser = new FormControl('');
   userList: string[] = [];
 
-  selectedUser: UserDataInterface | null = null;
+  selectedUser: GetAllUsersResponse | null = null;
+  userProfile: GetAllUsersResponse | null = null;
+  availableUsers: GetAllUsersResponse[] = [];
 
   selectedMessage: MessageDataInterface | null = null;
   currentChannelData: ChannelDataInterface | null = null;
@@ -107,7 +110,8 @@ export class ChatComponent implements OnInit, OnChanges, AfterViewChecked {
     private threadDataService: ThreadDataService,
     private firestore: Firestore,
     public scrollService: ScrollService,
-    public directMessageToUserService: DirectMessageToUserService
+    public directMessageToUserService: DirectMessageToUserService,
+    private apiClient: APIClient,
   ) {
     this.chatTriggerSubscription = this.chatBehavior.crudTriggered$.subscribe(() => {
       this.toggleChat();
@@ -129,7 +133,7 @@ export class ChatComponent implements OnInit, OnChanges, AfterViewChecked {
     this.getDataFromChannel();
     this.getUserData();
     this.getCurrentUserId();
-    this.compareIds();
+    //this.compareIds();
     this.deleteUserFromChannel();
     this.getThreadData();
     this.updateUsersForMention();
@@ -146,17 +150,18 @@ export class ChatComponent implements OnInit, OnChanges, AfterViewChecked {
     this.chatTriggerSubscription.unsubscribe();
   }
 
-  async getUserData() {
-    this.userDataService.getUserDataQueryOld().subscribe(
-      (userData: UserDataInterface[]) => {
-        this.userData = userData;
-        this.userList = userData.map(user => user.name);
-        console.log('Subscribed data users:', userData);
+  getUserData(): GetAllUsersResponse[] {
+    this.apiClient.getApiAllUsers().subscribe({
+      next: (response) => {
+        this.availableUsers = response;
+        // this.userList = availalbeUsers.map(user => user.user_name);
+        // console.log('Subscribed data users:', availalbeUsers);
       },
-      (error) => {
-        console.error('Error retrieving user data:', error);
+      error: (error) => {
+        console.error('Error retrieving all user data:', error);
       }
-    );
+    });
+    return this.availableUsers
   }
 
   async getDataFromChannel(): Promise<void> {
@@ -532,14 +537,14 @@ export class ChatComponent implements OnInit, OnChanges, AfterViewChecked {
   }
 
   openUserProfile(id: any) {
-    this.isProfileCardOpen = true;
+    /* this.isProfileCardOpen = true;
     this.isLogoutContainerOpen = false;
     //this.userDataService.getCurrentUserData(id);
     this.userProfile = [];
     if (id) {
       this.userProfile = this.userDataService.userData.filter(user => user.id.includes(id));
       console.log(this.userProfile);
-    }
+    } */
   }
 
   closeUserProfile() {
@@ -640,7 +645,7 @@ export class ChatComponent implements OnInit, OnChanges, AfterViewChecked {
     });
   }
 
-  async compareIds() {
+  /* async compareIds() {
     this.messageDataService.messageData$.subscribe(
       (messages) => {
 
@@ -650,7 +655,7 @@ export class ChatComponent implements OnInit, OnChanges, AfterViewChecked {
           (userIds: string[]) => {
 
             const userIdToNameMap: { [id: string]: string } = {};
-            this.userData.forEach(user => {
+            this.availableUsers.forEach(user => {
               if (userIds.includes(user.id)) {
                 userIdToNameMap[user.id] = user.name;
               }
@@ -667,7 +672,7 @@ export class ChatComponent implements OnInit, OnChanges, AfterViewChecked {
         );
       }
     );
-  }
+  } */
 
   async deleteMessage(messageId: any) {
     if (!messageId) {
@@ -780,7 +785,7 @@ export class ChatComponent implements OnInit, OnChanges, AfterViewChecked {
   }
 
   getUserById(userId: any) {
-    return this.userData.find(user => user.id === userId) || null;
+    return this.availableUsers.find(user => user.user_id === userId) || null;
   }
 
   schrollToBottom() {

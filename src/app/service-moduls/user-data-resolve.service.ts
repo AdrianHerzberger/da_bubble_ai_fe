@@ -1,18 +1,18 @@
 import { Injectable } from '@angular/core';
 import { BehaviorSubject, Observable } from 'rxjs';
-import { UserDataInterface } from './user.service';
+import { GetAllUsersResponse } from 'output/models/types';
 
 @Injectable({
   providedIn: 'root'
 })
 export class UserDataResolveService {
-  private dataSubjectUsers = new BehaviorSubject<UserDataInterface | null>(null);
+  private dataSubjectUsers = new BehaviorSubject<GetAllUsersResponse | null >(null);
 
-  sendDataUsers(data: UserDataInterface | null) {
+  sendDataUsers(data: GetAllUsersResponse | null) {
     this.dataSubjectUsers.next(data);
   }
 
-  resolve(): Observable<UserDataInterface | null> {
+  resolve(): Observable<GetAllUsersResponse | null> {
     return this.dataSubjectUsers.asObservable();
   }
 }

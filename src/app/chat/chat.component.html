@@ -235,13 +235,13 @@
       <mat-icon (click)="closeUserProfile()">close</mat-icon>
     </mat-card-header>
     <div class="user-img">
-      <img src="{{ this.userProfile[0].picture }}">
+      <img src="{{ this.userProfile?.user_profile_picture_url }}">
     </div>
     <mat-card-content>
       <div class="user-contact-info">
-        <p>{{ this.userProfile[0].name }}</p>
+        <p>{{ this.userProfile?.user_name }}</p>
       </div>
-      <div class="user-status" [ngClass]="{'user-active': this.userProfile[0].status === 'Active'}">
+      <!-- <div class="user-status" [ngClass]="{'user-active': this.userProfile[0].status === 'Active'}">
         <p>
           <svg *ngIf="this.userProfile[0].status === 'Active'" xmlns="http://www.w3.org/2000/svg" width="8" height="8"
             viewBox="0 0 8 8">
@@ -253,17 +253,17 @@
           </svg>
           {{ this.userProfile[0].status }}
         </p>
-      </div>
+      </div> -->
       <div class="user-email">
         <mat-icon>mail_outline</mat-icon>
         <div class="user-email-link">
           <p>E-Mail</p>
-          <a>{{ this.userProfile[0].email }}</a>
+          <a>{{ this.userProfile?.user_email }}</a>
         </div>
       </div>
     </mat-card-content>
     <mat-card-actions class="user-message-button">
-      <button (click)="openDirectMessageToUser(this.userProfile[0].id)" mat-flat-button color="primary">
+      <button (click)="openDirectMessageToUser(this.userProfile?.user_id)" mat-flat-button color="primary">
         <mat-icon>chat_bubble_outline</mat-icon>
         Message
       </button>
