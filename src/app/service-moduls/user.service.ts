@@ -2,8 +2,8 @@ import { Injectable } from '@angular/core';
 import { DocumentData, Firestore, QuerySnapshot, collection, doc, getDoc, getDocs, query } from '@angular/fire/firestore';
 import { Router } from '@angular/router';
 import { APIClient } from 'output';
-import { GetAllUsersResponse, GetUserByIdResponse } from 'output/models/types';
-import { BehaviorSubject, Observable, from, map, of } from 'rxjs';
+import { GetAllUsersResponse, GetUserByEmailResponse, GetUserByIdResponse } from 'output/models/types';
+import { BehaviorSubject, EMPTY, Observable, catchError, from, map, of, tap } from 'rxjs';
 
 export interface UserDataInterface {
   id: string;
@@ -41,20 +41,16 @@ export class UserDataService {
     return profilePictureUrl;
   }
 
-  getCurrentUserById(userId: number | null): void {
-    this.apiClient.getApiUserId({ user_id: userId }).subscribe({
-      next: (response) => {
-        const userData = response;
+  getCurrentUserById(userId: number | null): Observable<GetUserByIdResponse> {
+    return this.apiClient.getApiUserId({ user_id: userId }).pipe(
+      tap(response => {
+        const userData = response
         if (userData) {
           this.userDataSubject.next(userData);
         } else {
           console.error('User ID not found in response.');
         }
-      },
-      error: (error) => {
-        console.error('Error retrieving user data:', error);
-      }
-    });
+      }));
   }
 
   getCurrentUserId(): number | null {
@@ -74,10 +70,18 @@ export class UserDataService {
     this.apiClient.getApiUserEmail({ user_email: userEmail }).subscribe({
       next: (response) => {
         const userId = response.user_id;
-        console.log("Received user mail from body:", userId)
         if (userId) {
-          this.router.navigateByUrl(`/board/${userId}/channels`);
           this.getCurrentUserById(userId);
+          this.router.navigate([
+            `/board/${userId}`,
+            {
+              outlets: {
+                primary: ['channels'],
+                header: ['header']
+              }
+            }
+          ]);
+
         } else {
           console.error('User ID not found in response.');
         }

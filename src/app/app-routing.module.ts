@@ -10,6 +10,7 @@ import { ImprintComponent } from './imprint/imprint.component';
 import { LegalComponent } from './legal/legal.component';
 import { ChannelsComponent } from './channels/channels.component';
 import { HeaderBarComponent } from './header-bar/header-bar.component';
+import { userResolve } from './resolvers/user-resolver';
 
 
 const routes: Routes = [
@@ -19,8 +20,20 @@ const routes: Routes = [
   { path: 'reset-password', component: PasswordResetComponent },
   { path: 'auth-action', component: AuthActionComponent },
   {
-    path: 'board/:userId', component: BoardComponent, children: [
-      { path: 'channels', component: ChannelsComponent },
+    path: 'board/:userId',
+    component: BoardComponent,
+    resolve: { user: userResolve },
+    children: [
+      {
+        path: 'channels',
+        component: ChannelsComponent,  
+        outlet: 'primary',
+      },
+      {
+        path: 'header',
+        component: HeaderBarComponent,  
+        outlet: 'header',
+      }
     ]
   },
   { path: 'imprint', component: ImprintComponent },

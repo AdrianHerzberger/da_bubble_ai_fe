@@ -35,6 +35,8 @@ export class HeaderBarComponent implements OnInit, OnDestroy {
 
   userData: UserDataInterface[] = [];
 
+  user: GetUserByIdResponse | null = null;
+
   editNameForm = new FormGroup({
     name: new FormControl('', [
       Validators.minLength(3),
@@ -70,10 +72,18 @@ export class HeaderBarComponent implements OnInit, OnDestroy {
 
   ngOnInit(): void {
     this.currentUserData();
+    this.getUserRouteParmas();
   }
 
   ngOnDestroy(): void {
     this.currentUserData();
+  }
+
+  getUserRouteParmas() {
+    this.route.data.subscribe(data => {
+      this.user = data['user'];
+      console.log("User data in header:", this.user);
+    })
   }
 
   currentUserData() {

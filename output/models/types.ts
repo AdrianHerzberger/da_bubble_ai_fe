@@ -3,7 +3,7 @@ export interface GetUserByIdArgs {
 }
 
 export interface GetUserByIdResponse {
-    user_id: number;
+    user_id: number | null;
     user_name: string;
     user_email: string;
     user_profile_picture_url: string;
