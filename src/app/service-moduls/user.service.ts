@@ -76,8 +76,10 @@ export class UserDataService {
             `/board/${userId}`,
             {
               outlets: {
-                primary: ['channels'],
-                header: ['header']
+                primary: ['header'],
+                channels: ['channels'],
+                chat: ['chat'],
+                thread : ['thread']
               }
             }
           ]);

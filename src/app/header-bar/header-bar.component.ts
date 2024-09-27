@@ -72,18 +72,10 @@ export class HeaderBarComponent implements OnInit, OnDestroy {
 
   ngOnInit(): void {
     this.currentUserData();
-    this.getUserRouteParmas();
   }
 
   ngOnDestroy(): void {
     this.currentUserData();
-  }
-
-  getUserRouteParmas() {
-    this.route.data.subscribe(data => {
-      this.user = data['user'];
-      console.log("User data in header:", this.user);
-    })
   }
 
   currentUserData() {

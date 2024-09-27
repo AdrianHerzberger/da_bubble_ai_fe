@@ -4,20 +4,17 @@
 
 <div class="grid-view-component">
     <div class="grid-view-header">
-        <router-outlet name="header"></router-outlet> 
+        <router-outlet></router-outlet> 
     </div>
     <div class="board-flex">
         <div [ngClass]="{'hidden-channel': chatBehavior.hideChannel}" class="grid-view-channels">
-            <router-outlet></router-outlet>  
+            <router-outlet name="channels"></router-outlet>  
         </div>
         <div [ngClass]="{'hidden-chat': chatBehavior.hideChat}" *ngIf="(this.chatBehavior.ChannelChatIsOpen && !this.chatBehavior.isResponsive) || (this.chatBehavior.isChatOpenResponsive && this.chatBehavior.isResponsive)">
-            <app-chat></app-chat>
-        </div>
-        <div [ngClass]="{'hidden-direct-chat': chatBehavior.hideDirectChat}" *ngIf="(this.directMessageToUserService.directMessageToUserOpen && !this.chatBehavior.isResponsive) || (this.chatBehavior.isDirectChatToUserOpenResponsive && this.chatBehavior.isResponsive)">
-            <app-direct-message-to-user></app-direct-message-to-user>
+            <router-outlet name="chat"></router-outlet> 
         </div>
         <div *ngIf="(this.threadDataService.threadOpen && !this.chatBehavior.isResponsive) || (this.chatBehavior.isThreadOpenResponsive && this.chatBehavior.isResponsive)">
-            <app-threads></app-threads>
+            <router-outlet name="thread"></router-outlet>
         </div>
     </div>
 </div>

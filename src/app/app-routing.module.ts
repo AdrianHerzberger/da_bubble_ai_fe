@@ -11,6 +11,8 @@ import { LegalComponent } from './legal/legal.component';
 import { ChannelsComponent } from './channels/channels.component';
 import { HeaderBarComponent } from './header-bar/header-bar.component';
 import { userResolve } from './resolvers/user-resolver';
+import { ChatComponent } from './chat/chat.component';
+import { ThreadsComponent } from './threads/threads.component';
 
 
 const routes: Routes = [
@@ -25,14 +27,24 @@ const routes: Routes = [
     resolve: { user: userResolve },
     children: [
       {
-        path: 'channels',
-        component: ChannelsComponent,  
+        path: 'header',
+        component: HeaderBarComponent,  
         outlet: 'primary',
       },
       {
-        path: 'header',
-        component: HeaderBarComponent,  
-        outlet: 'header',
+        path: 'channels',
+        component: ChannelsComponent,  
+        outlet: 'channels',
+      },
+      {
+        path: 'chat',
+        component: ChatComponent,
+        outlet: 'chat',
+      },
+      {
+        path: 'thread',
+        component: ThreadsComponent,
+        outlet: 'thread',
       }
     ]
   },
