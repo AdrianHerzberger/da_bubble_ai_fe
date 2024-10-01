@@ -1,9 +1,9 @@
 <mat-card [ngClass]="{'chat-card-when-emoji-picker-active': emojiService.emojipickeractiveChat}" class="chat-card">
   <div class="shadow-box">
     <div class="chat-first-row" *ngIf="!(this.chatBehavior.toggleSearchBar)">
-      <div class="chat-head" *ngIf="(receivedChannelData$ | async) as channel" (click)="editChannel()">
+      <div class="chat-head" *ngIf="(selectedChannelData) as channel" (click)="editChannel()">
         <img class="hash-chat-name" src="./assets/img/icons/tag.svg" alt="#">
-        <span class="chat-name">{{ inputSearchIdResults ? inputSearchIdResults : channel.channelName }}</span>
+        <span class="chat-name">{{ inputSearchIdResults ? inputSearchIdResults : channel.channel_name }}</span>
         <img class="add-participant" src="./assets/img/icons/keyboard_arrow_down.png" alt="#">
       </div>
       <div class="right-corner">
@@ -12,8 +12,8 @@
             <img class="participant-icon" *ngIf="i < 3" [src]="participant" alt="User">
           </ng-container>
         </div>
-        <div class="participant-amount" *ngIf="(receivedChannelData$ | async) as channel">
-          {{ channel.users.length }}
+        <div class="participant-amount" *ngIf="(selectedChannelData) as channel">
+          <!-- {{ channel.users.length }} -->
         </div>
         <div *ngIf="channelId" class="add-participant-background">
           <img (click)="openInviteUserToChannel()" class="add-participant" src="./assets/img/icons/add_participant.png"
@@ -56,8 +56,8 @@
       <mat-icon (click)="closeInviteUserToChannel()">close</mat-icon>
     </div>
 
-    <div class="invite-user-card-link" *ngIf="(receivedChannelData$ | async) as channel">
-      <span># {{ channel.channelName }} </span>
+    <div class="invite-user-card-link" *ngIf="(selectedChannelData) as channel">
+      <span># {{ channel.channel_name }} </span>
     </div>
 
     <input [(ngModel)]="inviteUserToChannel" (input)="searchUser()" type="text" placeholder="Enter Name">
@@ -190,15 +190,15 @@
         <div (click)="mentionService.deleteMention(i)" class="delete-mention">+</div>
       </div>
     </div>
-    <div class="text-editor" *ngIf="(receivedChannelData$ | async) as channel">
+    <div class="text-editor" *ngIf="(selectedChannelData) as channel">
       <div (click)="emojiService.emojipickeractiveChat = false" *ngIf="emojiService.emojipickeractiveChat"
         class="behind-emoji-popup">
         <app-emojis (click)="mentionService.preventClick($event)" (newEmoji)="typeEmoji($event)"
           class="app-emojis"></app-emojis>
       </div>
       <textarea (input)="checkForMention($event)"
-        placeholder="Message to # {{ inputSearchIdResults ? inputSearchIdResults : channel.channelName }}"
-        [(ngModel)]="messageInput" rows="4" (keyup.enter)="sendMessage(channel.id)">
+        placeholder="Message to # {{ inputSearchIdResults ? inputSearchIdResults : channel.channel_name }}"
+        [(ngModel)]="messageInput" rows="4" (keyup.enter)="sendMessage(channel.channel_id)">
       </textarea>
       <div class="text-editor-bottom">
         <div class="text-editor-left-btns">
@@ -212,7 +212,7 @@
           </mat-menu>
         </div>
         <div [style.opacity]="messageInput.length === 0 ? '0.5' : '1'" class="send-message-btn"
-          (click)="sendMessage(channel.id)">
+          (click)="sendMessage(channel.channel_id)">
         </div>
       </div>
       <div class="button-backlayer">
@@ -274,25 +274,25 @@
 <!-- Edit Channel -->
 <mat-card class="overlay" *ngIf="openEditChannel">
   <div class="channel-edit-card">
-    <div class="channel-text" *ngIf="(receivedChannelData$ | async) as channel">
+    <div class="channel-text" *ngIf="(selectedChannelData) as channel">
       <div class="channel-header">
-        <h1># {{ channel.channelName }}</h1>
+        <h1> {{ channel.channel_name }} # {{ channel.channel_id }}</h1>
         <img src="./assets/img/icons/close.png" alt="#" (click)="closeEditChannel()">
       </div>
     </div>
 
     <div *ngIf="!(editChannelName)">
-      <div class="frame-edit" *ngIf="(receivedChannelData$ | async) as channel">
+      <div class="frame-edit" *ngIf="(selectedChannelData) as channel">
         <div class="channel-edit">
-          <h2>Channel-Name</h2>
+          <h2>Channel Name</h2>
           <span (click)="updateChannelName()">Edit</span>
         </div>
-        <h2># {{ channel.channelName }}</h2>
+        <h2># {{ channel.channel_name }}</h2>
       </div>
     </div>
 
     <div *ngIf="editChannelName">
-      <div class="channel-edit" *ngIf="(receivedChannelData$ | async) as channel">
+      <div class="channel-edit" *ngIf="(selectedChannelData) as channel">
         <h2>Channel-Name</h2>
         <span (click)="saveChangesToChannelName()">Save</span>
       </div>
@@ -304,9 +304,9 @@
     </div>
 
     <div *ngIf="!(editChannelDescription)">
-      <div class="frame-edit" *ngIf="(receivedChannelData$ | async) as channel">
+      <div class="frame-edit" *ngIf="(selectedChannelData) as channel">
         <div class="channel-edit">
-          <h2># {{ channel.channelName }}</h2>
+          <h2># {{ channel.channel_name }}</h2>
           <span (click)="updateChannelDiscription()">Edit</span>
         </div>
         <div class="channel-text">
@@ -318,13 +318,13 @@
         <div class="under-line"></div>
         <div class="channel-creator">
           <h2>Created by</h2>
-          <span>{{ channel.createdByUser }}</span>
+          <!-- <span>{{ channel.createdByUser }}</span> -->
         </div>
       </div>
     </div>
 
     <div *ngIf="editChannelDescription">
-      <div class="channel-edit" *ngIf="(receivedChannelData$ | async) as channel">
+      <div class="channel-edit" *ngIf="(selectedChannelData) as channel">
         <h2>Bearbeiten</h2>
         <span (click)="saveChangesToChannelDescription()">Save</span>
       </div>

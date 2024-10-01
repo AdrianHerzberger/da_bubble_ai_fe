@@ -6,7 +6,7 @@ import { GetAllUsersResponse } from 'output/models/types';
   providedIn: 'root'
 })
 export class UserDataResolveService {
-  private dataSubjectUsers = new BehaviorSubject<GetAllUsersResponse | null >(null);
+  public dataSubjectUsers = new BehaviorSubject<GetAllUsersResponse | null >(null);
 
   sendDataUsers(data: GetAllUsersResponse | null) {
     this.dataSubjectUsers.next(data);

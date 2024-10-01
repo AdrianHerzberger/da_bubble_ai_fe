@@ -2,8 +2,6 @@ import { Injectable } from '@angular/core';
 import { DocumentData, Firestore, QuerySnapshot, addDoc, collection, deleteDoc, doc, getDocs, onSnapshot, query, setDoc, updateDoc } from '@angular/fire/firestore';
 import { APIClient } from 'output';
 import { BehaviorSubject, Observable, catchError, from, map, of, tap } from 'rxjs';
-import { UserDataService } from './user.service';
-import { HttpHeaders } from '@angular/common/http';
 import { CreateChannelUserAssociationBody, GetAllChannelsRespsonse, GetChannelAssociatedUserResponse, GetChannelByIdResponse, GetUserAssociatedChannelResponse } from 'output/models/types';
 import { Router } from '@angular/router';
 
@@ -23,7 +21,6 @@ export interface ChannelDataInterface {
 export class ChannelDataService {
 
   private channelDataSubject = new BehaviorSubject<GetChannelByIdResponse | null>(null);
-  public channelData$ = this.channelDataSubject.asObservable();
 
   channelData: ChannelDataInterface[] = [];
 

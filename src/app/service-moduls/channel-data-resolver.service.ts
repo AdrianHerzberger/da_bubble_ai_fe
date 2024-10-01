@@ -1,18 +1,18 @@
 import { Injectable } from '@angular/core';
 import { BehaviorSubject, Observable } from 'rxjs';
-import { ChannelDataInterface } from './channel.service';
+import { GetAllChannelsRespsonse } from 'output/models/types';
 
 @Injectable({
   providedIn: 'root'
 })
 export class ChannelDataResolverService {
-  private dataSubjectChannel = new BehaviorSubject<ChannelDataInterface | null>(null);
+  public dataSubjectChannel = new BehaviorSubject<GetAllChannelsRespsonse | null>(null);
   
-  sendDataChannels(data: ChannelDataInterface | null) {
+  sendDataChannels(data: GetAllChannelsRespsonse | null) {
     this.dataSubjectChannel.next(data);
   }
 
-  resolve(): Observable<ChannelDataInterface | null> {
+  resolve(): Observable<GetAllChannelsRespsonse | null> {
     return this.dataSubjectChannel.asObservable();
   }
 }

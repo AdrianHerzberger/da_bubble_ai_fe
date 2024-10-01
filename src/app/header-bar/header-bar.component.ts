@@ -169,13 +169,13 @@ export class HeaderBarComponent implements OnInit, OnDestroy {
     this.resetForm();
   }
 
-  async getDataFromChannel(): Promise<void> {
-    this.receivedChannelData$ = this.channelDataResolver.resolve().pipe(
-      map((data: ChannelDataInterface | null) => {
-        return data;
-      })
-    );
-  }
+  // async getDataFromChannel(): Promise<void> {
+  //   this.receivedChannelData$ = this.channelDataResolver.resolve().pipe(
+  //     map((data: ChannelDataInterface | null) => {
+  //       return data;
+  //     })
+  //   );
+  // }
 
   /**
  * Updates the provided value in the database.

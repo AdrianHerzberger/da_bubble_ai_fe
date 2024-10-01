@@ -15,7 +15,7 @@ import { EmojiService } from '../service-moduls/emoji.service';
 import { DirectMessageToUserService } from '../service-moduls/direct-message-to-user.service';
 import { MentionService } from '../service-moduls/mention.service';
 import { MatMenuTrigger } from '@angular/material/menu';
-import { GetAllUsersResponse } from 'output/models/types';
+import { GetAllChannelsRespsonse, GetAllUsersResponse } from 'output/models/types';
 import { APIClient } from 'output';
 
 @Component({
@@ -34,8 +34,7 @@ export class ChatComponent implements OnInit, OnChanges, AfterViewChecked {
   [x: string]: any;
   channelName!: FormGroup;
   channelDescription!: FormGroup;
-  receivedChannelData$!: Observable<ChannelDataInterface | null>;
-
+  
   messageData: MessageDataInterface[] = [];
   channelData: ChannelDataInterface[] = [];
   threadData: ThreadDataInterface[] = [];
@@ -46,6 +45,8 @@ export class ChatComponent implements OnInit, OnChanges, AfterViewChecked {
   userList: string[] = [];
 
   selectedUser: GetAllUsersResponse | null = null;
+  selectedChannelData: GetAllChannelsRespsonse | null = null;
+  
   userProfile: GetAllUsersResponse | null = null;
   availableUsers: GetAllUsersResponse[] = [];
 
@@ -102,8 +103,8 @@ export class ChatComponent implements OnInit, OnChanges, AfterViewChecked {
     public mentionService: MentionService,
     public userDataService: UserDataService,
     private channelDataService: ChannelDataService,
-    private channelDataResolver: ChannelDataResolverService,
-    private userDataResolver: UserDataResolveService,
+    private channelDataResolveService: ChannelDataResolverService,
+    private userDataResolveService: UserDataResolveService,
     public chatBehavior: ChatBehaviorService,
     private fbChannelName: FormBuilder,
     private fbChannelDescription: FormBuilder,
@@ -130,16 +131,17 @@ export class ChatComponent implements OnInit, OnChanges, AfterViewChecked {
     this.channelDescription = this.fbChannelDescription.group({
       channelDescription: ['', [Validators.required]],
     });
-    this.getDataFromChannel();
+    this.getCurrentChannelToChat();
     this.getUserData();
     this.getCurrentUserId();
     //this.compareIds();
     this.deleteUserFromChannel();
     this.getThreadData();
     this.updateUsersForMention();
-    this.receivedChannelData$.pipe(
-      switchMap(channelData => this.loadUserProfilePicture(channelData))
-    ).subscribe();
+    // this.selectedChannelData.pipe(
+    //   switchMap(channelData => this.loadUserProfilePicture(channelData))
+    // ).subscribe();
+    this.getCurerntUserToChat();
   }
 
   ngAfterViewChecked(): void {
@@ -164,15 +166,18 @@ export class ChatComponent implements OnInit, OnChanges, AfterViewChecked {
     return this.availableUsers
   }
 
-  async getDataFromChannel(): Promise<void> {
-    this.receivedChannelData$ = this.channelDataResolver.resolve().pipe(
-      map((data: ChannelDataInterface | null) => {
-        if (data && data.id) {
-          this.processChannelData(data.id);
-        }
-        return data;
-      })
-    );
+  getCurerntUserToChat() {
+    this.userDataResolveService.dataSubjectUsers.subscribe((data: GetAllUsersResponse | null) => {
+      this.selectedUser = data;
+      console.log('User data:', this.selectedUser);
+    });
+  }
+
+  getCurrentChannelToChat() {
+    this.channelDataResolveService.dataSubjectChannel.subscribe((data: GetAllChannelsRespsonse |  null) => {
+      this.selectedChannelData = data;
+      console.log('User data:', this.selectedUser);
+    })
   }
 
   async getThreadData() {
@@ -259,9 +264,6 @@ export class ChatComponent implements OnInit, OnChanges, AfterViewChecked {
     }
   }
 
-  selecetedUser = () => {
-
-  }
 
   selectMessage(messageId: string) {
     this.selectedMessage = this.getMessageId(messageId);
@@ -424,11 +426,11 @@ export class ChatComponent implements OnInit, OnChanges, AfterViewChecked {
   }
 
   updateUsersForMention() {
-    this.receivedChannelData$.subscribe(data => {
-      if (data && data.users) {
-        this.mentionService.getUsers(data.users, this.userDataService.userName);
-      }
-    });
+    // this.selectedChannelData.subscribe(data => {
+    //   if (data && data.users) {
+    //     this.mentionService.getUsers(data.users, this.userDataService.userName);
+    //   }
+    // });
   }
 
   checkForMention(event: Event) {
@@ -528,12 +530,12 @@ export class ChatComponent implements OnInit, OnChanges, AfterViewChecked {
 
   editChannel() {
     this.openEditChannel = true;
-    this.receivedChannelData$.subscribe((data: ChannelDataInterface | null) => {
-      if (data) {
-        this.currentChannelData = data;
-      }
-      console.log('Received Channel Data:', this.currentChannelData);
-    });
+    // this.selectedChannelData.subscribe((data: ChannelDataInterface | null) => {
+    //   if (data) {
+    //     this.currentChannelData = data;
+    //   }
+    //   console.log('Received Channel Data:', this.currentChannelData);
+    // });
   }
 
   openUserProfile(id: any) {
@@ -781,7 +783,7 @@ export class ChatComponent implements OnInit, OnChanges, AfterViewChecked {
     this.chatBehavior.ChannelChatIsOpen = false;
 
     this.selectedUser = this.getUserById(userId);
-    this.userDataResolver.sendDataUsers(this.selectedUser);
+    this.userDataResolveService.sendDataUsers(this.selectedUser);
   }
 
   getUserById(userId: any) {

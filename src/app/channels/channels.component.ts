@@ -199,8 +199,8 @@ export class ChannelsComponent implements OnInit {
   }
 
   selectChannel(channelId: any) {
-    //this.selectedChannel = this.getChannelById(channelId);
-    //this.channelDataResolver.sendDataChannels(this.selectedChannel);
+    this.selectedChannel = this.getChannelById(channelId);
+    this.channelDataResolver.sendDataChannels(this.selectedChannel);
     this.updateChannelName(this.selectedChannel);
     this.directMessageToUserService.directMessageToUserOpen = false;
     this.chatBehavior.ChannelChatIsOpen = true;
